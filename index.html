@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuestra Boda - Mayra & Felipe</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Montserrat:wght@300;400&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header class="hero">
+        <div class="hero-text">
+            <h1>Mayra & Felipe</h1>
+            <p>¡Nos casamos! - 11 de Abril, 2026</p>
+        </div>
+    </header>
+
+    <section class="gallery">
+        <h2>Nuestros Momentos</h2>
+        <div class="carousel-container">
+            <button class="nav-btn prev" id="prevBtn" aria-label="Anterior">&#10094;</button>
+            <div class="carousel-window">
+                <div class="carousel-track" id="track">
+                    <div class="card"><img src="img/photo-1.jpeg" alt="Momento 1"></div>
+                    <div class="card"><img src="img/photo-2.jpeg" alt="Momento 2"></div>
+                    <div class="card"><img src="img/photo-3.jpeg" alt="Momento 3"></div>
+                    <div class="card"><img src="img/photo-4.jpeg" alt="Momento 4"></div>
+                    <div class="card"><img src="img/photo-5.jpeg" alt="Momento 5"></div>
+                </div>
+            </div>
+            <button class="nav-btn next" id="nextBtn" aria-label="Siguiente">&#10095;</button>
+        </div>
+    </section>
+
+    <section class="itinerary">
+        <h2>Itinerario del Evento</h2>
+        <div class="timeline">
+            <div class="event">
+                <h3>17:00 - Ceremonia</h3>
+                <p>Lugar: Capilla de Santa María</p>
+            </div>
+            <div class="event">
+                <h3>19:00 - Recepción</h3>
+                <p>Lugar: Salón de Eventos "El Jardín"</p>
+            </div>
+            <div class="event">
+                <h3>21:00 - Cena y Baile</h3>
+                <p>¡Prepárate para celebrar!</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="rsvp">
+        <h2>Confirmar Asistencia</h2>
+        <form id="rsvp-form">
+            <div class="form-group">
+                <label for="guest-search">Busca tu nombre en la lista:</label>
+                <input list="guests-list" id="guest-search" placeholder="Escribe tu nombre completo..." required autocomplete="off">
+                <datalist id="guests-list">
+                    </datalist>
+            </div>
+
+            <div id="dynamic-inputs"></div>
+
+            <button type="submit" id="submit-btn" style="display:none;">Confirmar Asistencia</button>
+        </form>
+    </section>
+
+    <footer>
+        <p>Hecho con ❤️ para nuestra boda</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

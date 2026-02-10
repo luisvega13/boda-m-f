@@ -1,0 +1,157 @@
+:root {
+    --primary: #d4a373;
+    --secondary: #fefae0;
+    --text: #333;
+}
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    margin: 0;
+    color: var(--text);
+    background-color: #fafafa;
+    line-height: 1.6;
+    overflow-x: hidden; /* Evita scroll horizontal no deseado */
+}
+
+h1, h2 {
+    font-family: 'Dancing Script', cursive;
+    text-align: center;
+    color: var(--primary);
+}
+
+/* --- Hero Section Responsive --- */
+.hero {
+    height: 100vh;
+    background: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), 
+                url('img/background-boda-2.jpeg') no-repeat center center/cover;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-align: center;
+    padding: 0 20px;
+}
+
+.hero h1 { font-size: clamp(3rem, 10vw, 6rem); color: white;margin-bottom: 10px; }
+.hero p { font-size: clamp(1rem, 4vw, 1.5rem); }
+
+/* --- Carrusel Infinito con Enfoque --- */
+.carousel-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 1200px;
+    margin: auto;
+    position: relative;
+}
+
+.carousel-window {
+    overflow: hidden;
+    width: 100%;
+    padding: 40px 0; /* Espacio para el scale */
+}
+
+.carousel-track {
+    display: flex;
+    align-items: center;
+    will-change: transform;
+}
+
+.card {
+    /* Por defecto (móvil): 1 imagen visible */
+    min-width: 100%; 
+    transition: transform 0.5s ease, opacity 0.5s ease, filter 0.5s ease;
+    opacity: 0.4;
+    transform: scale(0.85);
+    filter: grayscale(100%);
+    box-sizing: border-box;
+    padding: 0 10px;
+}
+
+.card.active {
+    opacity: 1;
+    transform: scale(1);
+    filter: grayscale(0%);
+    z-index: 2;
+}
+
+.card img {
+    width: 100%;
+    height: clamp(250px, 50vh, 450px);
+    object-fit: cover;
+    border-radius: 15px;
+    display: block;
+}
+
+/* --- Botones --- */
+.nav-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    width: 45px;
+    height: 45px;
+    cursor: pointer;
+    border-radius: 50%;
+    position: absolute;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s;
+}
+
+.nav-btn:hover { background-color: #bc8a5f; }
+.prev { left: 10px; }
+.next { right: 10px; }
+
+/* --- RSVP e Itinerario --- */
+.itinerary, .rsvp {
+    padding: 40px 20px;
+    max-width: 800px;
+    margin: auto;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+input, select, button[type="submit"] {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+button[type="submit"] {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* --- MEDIA QUERIES (Escritorio) --- */
+@media (min-width: 768px) {
+    .card {
+        min-width: 33.33%; /* 3 imágenes visibles */
+    }
+    
+    .card.active {
+        transform: scale(1.15); /* Solo crece en pantallas grandes */
+    }
+    .hero {
+        height: 100vh;
+        background: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), 
+                    url('img/background-boda.jpeg') no-repeat center center/cover;
+    }
+    
+
+    .prev { left: -20px; }
+    .next { right: -20px; }
+}
