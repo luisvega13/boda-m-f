@@ -58,9 +58,10 @@
         <form id="rsvp-form">
             <div class="form-group">
                 <label for="guest-search">Busca tu nombre en la lista:</label>
-                <input list="guests-list" id="guest-search" placeholder="Escribe tu nombre completo..." required autocomplete="off">
-                <datalist id="guests-list">
-                    </datalist>
+                <div class="search-container">
+                    <input type="text" id="guest-search" placeholder="Escribe tu nombre completo..." required autocomplete="off">
+                    <div class="autocomplete-list" id="autocomplete-list"></div>
+                </div>
             </div>
 
             <div id="dynamic-inputs"></div>
@@ -70,7 +71,7 @@
     </section>
 
     <footer>
-        <p>Hecho con ❤️ para nuestra boda</p>
+        
     </footer>
 
     <script src="script.js"></script>

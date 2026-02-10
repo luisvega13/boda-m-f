@@ -1,7 +1,7 @@
 let guests = [];
 
 const inputSearch = document.getElementById('guest-search');
-const dataList = document.getElementById('guests-list');
+const autocompleteList = document.getElementById('autocomplete-list');
 const dynamicContainer = document.getElementById('dynamic-inputs');
 const submitBtn = document.getElementById('submit-btn');
 const track = document.getElementById('track');
@@ -27,13 +27,6 @@ async function loadGuestsFromCSV() {
                 guests.push({ nombre, adultos, ninos });
             }
         }
-        
-        // Repoblar datalist con los invitados cargados
-        guests.forEach(g => {
-            const option = document.createElement('option');
-            option.value = g.nombre;
-            dataList.appendChild(option);
-        });
     } catch (error) {
         console.error('Error cargando CSV:', error);
     }
@@ -42,24 +35,94 @@ async function loadGuestsFromCSV() {
 // Cargar invitados al iniciar
 loadGuestsFromCSV();
 
+// Autocompletado personalizado
 inputSearch.addEventListener('input', (e) => {
     const val = e.target.value.trim().toLowerCase();
-    const guestFound = guests.find(g => g.nombre.toLowerCase() === val);
-    
     dynamicContainer.innerHTML = '';
+    submitBtn.style.display = 'none';
+    
+    if (val === '') {
+        autocompleteList.innerHTML = '';
+        autocompleteList.style.display = 'none';
+        return;
+    }
+    
+    const filtered = guests.filter(g => g.nombre.toLowerCase().includes(val));
+    
+    if (filtered.length > 0) {
+        autocompleteList.innerHTML = '';
+        autocompleteList.style.display = 'block';
+        
+        filtered.forEach(guest => {
+            const option = document.createElement('div');
+            option.className = 'autocomplete-option';
+            option.innerHTML = `
+                <span class="guest-name">${guest.nombre}</span>
+                <span class="guest-info">${guest.adultos + guest.ninos} persona(s)</span>
+            `;
+            
+            option.addEventListener('click', () => {
+                inputSearch.value = guest.nombre;
+                autocompleteList.style.display = 'none';
+                selectGuest(guest);
+            });
+            
+            autocompleteList.appendChild(option);
+        });
+    } else {
+        autocompleteList.innerHTML = '<div class="no-results">No se encontraron invitados</div>';
+        autocompleteList.style.display = 'block';
+    }
+});
+
+// Cuando se selecciona un invitado
+function selectGuest(guest) {
+    const val = inputSearch.value.trim().toLowerCase();
+    const guestFound = guests.find(g => g.nombre.toLowerCase() === val);
     
     if (guestFound) {
         renderFields(guestFound);
         submitBtn.style.display = 'block';
-    } else {
-        submitBtn.style.display = 'none';
     }
+}
+
+// Cerrar autocompletado al hacer click fuera
+document.addEventListener('click', (e) => {
+    if (e.target !== inputSearch) {
+        autocompleteList.style.display = 'none';
+    }
+});
+
+inputSearch.addEventListener('focus', () => {
+    if (inputSearch.value.trim() !== '' && autocompleteList.children.length > 0) {
+        autocompleteList.style.display = 'block';
+    }
+});
+
+// Prevenir envío si el invitado no está en la lista
+document.getElementById('rsvp-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    
+    const val = inputSearch.value.trim().toLowerCase();
+    const guestFound = guests.find(g => g.nombre.toLowerCase() === val);
+    
+    if (!guestFound) {
+        alert('Lo sentimos, tu nombre no aparece en la lista de invitados.');
+        return;
+    }
+    
+    // Si la validación pasa, mostrar mensaje de confirmación
+    showConfirmationMessage(guestFound);
 });
 
 function renderFields(guest) {
     if (guest.adultos > 0) {
         const title = document.createElement('p');
         title.innerText = `Nombres de acompañantes adultos (${guest.adultos}):`;
+        title.style.fontWeight = 'bold';
+        title.style.marginTop = '20px';
+        title.style.marginBottom = '10px';
+        title.style.color = 'var(--primary)';
         dynamicContainer.appendChild(title);
 
         for (let i = 1; i <= guest.adultos; i++) {
@@ -74,15 +137,51 @@ function renderFields(guest) {
 
     if (guest.ninos > 0) {
         const label = document.createElement('label');
-        label.innerHTML = `<br>¿Cuántos niños asistirán? (Máximo ${guest.ninos}):`;
+        label.innerHTML = `¿Cuántos niños asistirán? (Máximo ${guest.ninos}):`;
+        label.style.fontWeight = 'bold';
+        label.style.marginTop = '20px';
+        label.style.marginBottom = '10px';
+        label.style.color = 'var(--primary)';
         const nInput = document.createElement('input');
         nInput.type = 'number';
         nInput.min = 0;
         nInput.max = guest.ninos;
         nInput.value = 0;
+        nInput.style.marginBottom = "20px";
         dynamicContainer.appendChild(label);
         dynamicContainer.appendChild(nInput);
     }
+}
+
+function showConfirmationMessage(guest) {
+    // Ocultar formulario y mostrar mensaje
+    const form = document.getElementById('rsvp-form');
+    const rsvpSection = document.querySelector('.rsvp');
+    
+    form.style.display = 'none';
+    
+    const confirmationBox = document.createElement('div');
+    confirmationBox.id = 'confirmation-box';
+    confirmationBox.innerHTML = `
+        <div class="confirmation-content">
+            <div class="confirmation-icon">✓</div>
+            <h3>¡Confirmado!</h3>
+            <p>Gracias <strong>${guest.nombre}</strong>, tu asistencia ha sido confirmada.</p>
+            <p>Nos vemos el 11 de Abril, 2026.</p>
+            <button class="btn-new-rsvp">Confirmar otro invitado</button>
+        </div>
+    `;
+    
+    rsvpSection.appendChild(confirmationBox);
+    
+    document.querySelector('.btn-new-rsvp').addEventListener('click', () => {
+        confirmationBox.remove();
+        form.style.display = 'block';
+        inputSearch.value = '';
+        dynamicContainer.innerHTML = '';
+        submitBtn.style.display = 'none';
+        inputSearch.focus();
+    });
 }
 
 // ... (Tu código de invitados se mantiene igual)
