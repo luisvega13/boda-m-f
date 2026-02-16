@@ -352,7 +352,7 @@ footer { padding: 40px 20px; font-size: 0.9rem; color: var(--text-light); }
 }
 .rsvp{
     margin-top: 40px;
-    background-color: var(--secondary);
+    background-color: #fff;
 }
 footer{
     text-align: center;
