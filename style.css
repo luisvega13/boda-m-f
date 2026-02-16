@@ -203,7 +203,7 @@ h2 { font-size: 2.5rem; margin-bottom: 30px; }
 /* =========================================
    ITINERARIO (Timeline)
    ========================================= */
-.itinerary { padding: 60px 20px; max-width: 600px; margin: auto; }
+.itinerary { padding: 0px 20px 60px; max-width: 600px; margin: auto; }
 
 .timeline {
     text-align: left;
@@ -237,7 +237,6 @@ h2 { font-size: 2.5rem; margin-bottom: 30px; }
 /* =========================================
    MESA DE REGALOS
    ========================================= */
-.gifts { padding: 60px 20px; background: #fdf8f2; }
 
 .gift-grid {
     display: grid;
@@ -251,6 +250,7 @@ h2 { font-size: 2.5rem; margin-bottom: 30px; }
     background: white;
     padding: 30px;
     border-radius: 15px;
+    text-align: center;
     border: 1px solid rgba(212, 163, 115, 0.2);
 }
 
@@ -259,14 +259,6 @@ h2 { font-size: 2.5rem; margin-bottom: 30px; }
 /* =========================================
    RSVP Y AUTOCOMPLETADO
    ========================================= */
-.rsvp {
-    background: linear-gradient(135deg, rgba(212, 163, 115, 0.05), rgba(254, 250, 224, 0.1));
-    border-radius: 15px;
-    margin: 40px auto;
-    padding: 40px 30px;
-    max-width: 800px;
-    box-shadow: 0 5px 20px rgba(212, 163, 115, 0.1);
-}
 
 .search-container { position: relative; width: 100%; }
 
@@ -324,6 +316,13 @@ button[type="submit"] {
 
 button[type="submit"]:hover { background-color: var(--primary-dark); transform: translateY(-2px); }
 
+.icon{
+    width: 30px;
+    height: 30px;
+    display: inline-block;
+    vertical-align: middle;
+    fill: var(--primary);
+}
 /* =========================================
    FOOTER
    ========================================= */
@@ -341,4 +340,16 @@ footer { padding: 40px 20px; font-size: 0.9rem; color: var(--text-light); }
     }
     .prev { left: -20px; }
     .next { right: -20px; }
+}
+
+.gifts, .family, .rsvp{
+    padding: 60px 20px;
+    margin: auto;
+    max-width: 1000px;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    background: #fdf8f2; 
+}
+.rsvp{
+    margin-top: 40px;
 }
