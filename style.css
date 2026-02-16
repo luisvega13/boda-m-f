@@ -1,30 +1,46 @@
+/* =========================================
+   VARIABLES Y CONFIGURACIÓN BASE
+   ========================================= */
 :root {
     --primary: #d4a373;
+    --primary-dark: #bc8a5f;
     --secondary: #fefae0;
     --text: #333;
+    --text-light: #666;
+    --white: #ffffff;
+    --bg: #fafafa;
+    --gold: #b8860b;
+}
+
+* {
+    box-sizing: border-box;
 }
 
 body {
     font-family: 'Montserrat', sans-serif;
     margin: 0;
     color: var(--text);
-    background-color: #fafafa;
+    background-color: var(--bg);
     line-height: 1.6;
-    overflow-x: hidden; /* Evita scroll horizontal no deseado */
+    overflow-x: hidden;
 }
 
-h1, h2 {
+h1, h2, h3 {
     font-family: 'Dancing Script', cursive;
     text-align: center;
     color: var(--primary);
 }
 
-#m{
+h2 { font-size: 2.5rem; margin-bottom: 30px; }
+
+#m {
     text-align: center;
     color: red;
 }
 
-/* --- Hero Section Responsive --- */
+/* =========================================
+   HERO SECTION
+   ========================================= */
 .hero {
     height: 100vh;
     background: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), 
@@ -38,10 +54,60 @@ h1, h2 {
     padding: 0 20px;
 }
 
-.hero h1 { font-size: clamp(3rem, 10vw, 6rem); color: white;margin-bottom: 10px; }
-.hero p { font-size: clamp(1rem, 4vw, 1.5rem); }
+.hero h1 { 
+    font-size: clamp(3rem, 10vw, 6rem); 
+    color: white; 
+    margin-bottom: 10px; 
+}
 
-/* --- Carrusel Infinito con Enfoque --- */
+.hero p { 
+    font-size: clamp(1rem, 4vw, 1.5rem); 
+    color: white;
+}
+
+/* =========================================
+   INTRO & FAMILIA
+   ========================================= */
+.intro {
+    padding: 60px 20px;
+    max-width: 800px;
+    margin: auto;
+    font-style: italic;
+    text-align: center;
+}
+
+.family {
+    background: #fdf8f2;
+    padding: 60px 20px;
+}
+
+.family-grid {
+    display: block;
+    text-align: center;
+    gap: 40px;
+    max-width: 1000px;
+    margin: auto;
+}
+
+.family-group h3 {
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+}
+
+.family-group p {
+    margin: 5px 0;
+    font-size: 1.1rem;
+}
+
+.padrinos {
+    grid-column: 1 / -1;
+}
+
+/* =========================================
+   CARRUSEL INFINITO
+   ========================================= */
+.gallery { padding: 40px 0; }
+
 .carousel-container {
     display: flex;
     align-items: center;
@@ -55,7 +121,7 @@ h1, h2 {
 .carousel-window {
     overflow: hidden;
     width: 100%;
-    padding: 40px 0; /* Espacio para el scale */
+    padding: 60px 0;
 }
 
 .carousel-track {
@@ -66,13 +132,11 @@ h1, h2 {
 }
 
 .card {
-    /* Por defecto (móvil): 1 imagen visible */
     min-width: 100%; 
-    transition: transform 0.5s ease, opacity 0.5s ease, filter 0.5s ease;
+    transition: transform 0.6s ease, opacity 0.6s ease, filter 0.6s ease;
     opacity: 0.4;
     transform: scale(0.85);
     filter: grayscale(100%);
-    box-sizing: border-box;
     padding: 0 10px;
 }
 
@@ -85,13 +149,13 @@ h1, h2 {
 
 .card img {
     width: 100%;
-    height: clamp(250px, 50vh, 450px);
+    height: clamp(300px, 50vh, 450px);
     object-fit: cover;
     border-radius: 15px;
     display: block;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
 }
 
-/* --- Botones --- */
 .nav-btn {
     background: var(--primary);
     color: white;
@@ -105,57 +169,106 @@ h1, h2 {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.3s;
+    transition: background 0.3s, transform 0.2s;
 }
 
-.nav-btn:hover { background-color: #bc8a5f; }
+.nav-btn:hover { background-color: var(--primary-dark); transform: scale(1.1); }
 .prev { left: 10px; }
 .next { right: 10px; }
 
-/* --- RSVP e Itinerario --- */
-.itinerary, .rsvp {
-    padding: 40px 20px;
+/* =========================================
+   UBICACIONES (Ceremonia y Salón)
+   ========================================= */
+.locations {
+    padding: 60px 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    max-width: 1000px;
+    margin: auto;
+}
+
+.location-card {
+    background: white;
+    padding: 40px 30px;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    transition: transform 0.3s;
+}
+
+.location-card:hover { transform: translateY(-5px); }
+.location-card h3 { font-size: 2rem; }
+.time { font-weight: 600; color: var(--gold); font-size: 1.2rem; margin-top: 15px; }
+
+/* =========================================
+   ITINERARIO (Timeline)
+   ========================================= */
+.itinerary { padding: 60px 20px; max-width: 600px; margin: auto; }
+
+.timeline {
+    text-align: left;
+    margin-top: 40px;
+}
+
+.event {
+    display: flex;
+    gap: 20px;
+    border-left: 2px solid var(--primary);
+    padding: 0 0 40px 30px;
+    margin-left: 20px;
+    position: relative;
+}
+
+.event::before {
+    content: '';
+    width: 16px;
+    height: 16px;
+    background: var(--primary);
+    border-radius: 50%;
+    position: absolute;
+    left: -9px;
+    top: 0;
+}
+
+.event:last-child { border-left: none; padding-bottom: 0; }
+.event span { font-weight: 700; color: var(--primary); min-width: 80px; }
+.event p { margin: 0; font-weight: 400; }
+
+/* =========================================
+   MESA DE REGALOS
+   ========================================= */
+.gifts { padding: 60px 20px; background: #fdf8f2; }
+
+.gift-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
     max-width: 800px;
     margin: auto;
 }
 
+.gift-item {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    border: 1px solid rgba(212, 163, 115, 0.2);
+}
+
+.gift-item p { margin: 5px 0; }
+
+/* =========================================
+   RSVP Y AUTOCOMPLETADO
+   ========================================= */
 .rsvp {
     background: linear-gradient(135deg, rgba(212, 163, 115, 0.05), rgba(254, 250, 224, 0.1));
     border-radius: 15px;
-    margin-top: 40px;
-    margin-bottom: 40px;
+    margin: 40px auto;
     padding: 40px 30px;
+    max-width: 800px;
     box-shadow: 0 5px 20px rgba(212, 163, 115, 0.1);
 }
 
-.rsvp h2 {
-    margin-top: 0;
-    font-size: 2rem;
-    margin-bottom: 30px;
-}
-
-form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.form-group label {
-    font-weight: 600;
-    color: var(--primary);
-    font-size: 1rem;
-}
-
-.search-container {
-    position: relative;
-    width: 100%;
-}
+.search-container { position: relative; width: 100%; }
 
 .autocomplete-list {
     display: none;
@@ -170,7 +283,7 @@ form {
     max-height: 300px;
     overflow-y: auto;
     z-index: 1000;
-    box-shadow: 0 8px 20px rgba(212, 163, 115, 0.2);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
 }
 
 .autocomplete-option {
@@ -180,57 +293,20 @@ form {
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid #f0f0f0;
-    transition: background-color 0.2s, padding-left 0.2s;
 }
 
-.autocomplete-option:hover {
-    background-color: #fff9f0;
-    padding-left: 20px;
-}
+.autocomplete-option:hover { background-color: #fff9f0; }
 
-.autocomplete-option:last-child {
-    border-bottom: none;
-    border-radius: 0 0 8px 8px;
-}
-
-.guest-name {
-    font-weight: 600;
-    color: var(--text);
-    flex: 1;
-}
-
-.guest-info {
-    font-size: 0.85rem;
-    color: #999;
-    background-color: #f5f5f5;
-    padding: 2px 8px;
-    border-radius: 4px;
-    margin-left: 10px;
-    white-space: nowrap;
-}
-
-.no-results {
-    padding: 15px;
-    text-align: center;
-    color: #999;
-    font-size: 0.95rem;
-}
-
-input, select, button[type="submit"] {
+input, select {
     padding: 12px 15px;
     border: 2px solid #ddd;
     border-radius: 8px;
     font-size: 1rem;
     width: 100%;
-    box-sizing: border-box;
-    transition: border-color 0.3s, box-shadow 0.3s;
+    transition: border-color 0.3s;
 }
 
-input:focus, select:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(212, 163, 115, 0.1);
-}
+input:focus { border-color: var(--primary); outline: none; }
 
 button[type="submit"] {
     background-color: var(--primary);
@@ -238,119 +314,31 @@ button[type="submit"] {
     border: none;
     font-weight: bold;
     cursor: pointer;
-    padding: 14px;
+    padding: 15px;
     font-size: 1.1rem;
-    margin-top: 20px;
-    transition: background-color 0.3s, transform 0.2s;
-}
-
-button[type="submit"]:hover {
-    background-color: #bc8a5f;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(212, 163, 115, 0.3);
-}
-
-button[type="submit"]:active {
-    transform: translateY(0);
-}
-
-/* --- Confirmación --- */
-#confirmation-box {
-    animation: slideIn 0.5s ease-out;
-}
-
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.confirmation-content {
-    text-align: center;
-    padding: 40px 30px;
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(212, 163, 115, 0.2);
-}
-
-.confirmation-icon {
-    font-size: 4rem;
-    color: #4caf50;
-    margin-bottom: 20px;
-    animation: popIn 0.6s ease-out;
-}
-
-@keyframes popIn {
-    0% {
-        transform: scale(0);
-        opacity: 0;
-    }
-    50% {
-        transform: scale(1.2);
-    }
-    100% {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
-
-.confirmation-content h3 {
-    font-family: 'Dancing Script', cursive;
-    font-size: 2.5rem;
-    color: var(--primary);
-    margin: 0 0 15px 0;
-}
-
-.confirmation-content p {
-    font-size: 1.1rem;
-    color: #666;
-    margin: 10px 0;
-}
-
-.confirmation-content strong {
-    color: var(--primary);
-    font-weight: bold;
-}
-
-.btn-new-rsvp {
-    background-color: var(--primary);
-    color: white;
-    border: none;
-    padding: 12px 30px;
     border-radius: 8px;
-    font-size: 1rem;
-    font-weight: bold;
-    cursor: pointer;
-    margin-top: 25px;
-    transition: background-color 0.3s, transform 0.2s;
+    margin-top: 20px;
+    width: 100%;
+    transition: transform 0.2s, background 0.3s;
 }
 
-.btn-new-rsvp:hover {
-    background-color: #bc8a5f;
-    transform: translateY(-2px);
-}
+button[type="submit"]:hover { background-color: var(--primary-dark); transform: translateY(-2px); }
 
-/* --- MEDIA QUERIES (Escritorio) --- */
+/* =========================================
+   FOOTER
+   ========================================= */
+footer { padding: 40px 20px; font-size: 0.9rem; color: var(--text-light); }
+
+/* =========================================
+   MEDIA QUERIES
+   ========================================= */
 @media (min-width: 768px) {
-    .card {
-        min-width: 33.33%; /* 3 imágenes visibles */
-    }
-    
-    .card.active {
-        transform: scale(1.15); /* Solo crece en pantallas grandes */
-    }
+    .card { min-width: 33.33%; }
+    .card.active { transform: scale(1.15); }
     .hero {
-        height: 100vh;
         background: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), 
-                    url('img/background-boda.jpeg') no-repeat center center/cover;
+                    url('img/background-boda-2.jpeg') no-repeat center center/cover;
     }
-    
-
     .prev { left: -20px; }
     .next { right: -20px; }
 }
