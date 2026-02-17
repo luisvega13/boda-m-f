@@ -42,6 +42,7 @@
 
     <section class="gallery">
         <h2>Nuestros Momentos</h2>
+        
         <div class="carousel-container">
             <button class="nav-btn prev" id="prevBtn">&#10094;</button>
             <div class="carousel-window">
@@ -63,15 +64,17 @@
             <p><strong>Parroquia De Santo Toribio Romo</strong></p>
             <p>Av. San Francisco de Los Viveros 1431, Ojocaliente III</p>
             <p class="time">4:00 pm</p>
+            <a class="btn-link" href="https://maps.app.goo.gl/7wHe7rXriBDgeVJc9?g_st=aw" target="_blank" rel="noopener noreferrer">Ver en Maps</a>
         </div>
         <div class="location-card">
             <h3>Salón</h3>
             <p><strong>Villa Angeles Salon De Eventos</strong></p>
             <p>Av. Siglo XXI, Pozo Bravo, 20126, Aguascalientes, Ags.</p>
             <p class="time">8:00 pm</p>
+            <a class="btn-link" href="https://maps.app.goo.gl/9y6JNqKWiBaW36nY7?g_st=aw" target="_blank" rel="noopener noreferrer">Ver en Maps</a>
         </div>
     </section>
-
+    
     <section class="itinerary">
         <h2>Itinerario</h2>
         <div class="timeline">
@@ -84,6 +87,15 @@
             
         </div>
     </section>
+    
+    <!-- <div class="video-container">
+        <h2>Mayra y Felipe</h2>
+
+        <video controls width="100%" style="max-width: 1000px; margin: 0 auto; display: block; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">
+            <source src="img/F&M std.mp4" type="video/mp4">
+            Tu navegador no soporta la etiqueta de video.
+        </video>
+    </div> -->
 
     <section class="gifts">
         <h2>Mesa de Regalos</h2>
@@ -91,10 +103,12 @@
             <div class="gift-item">
                 <p><strong>Cantia</strong></p>
                 <p>Número: 22649</p>
+                <a class="btn-link gift-link" href="https://cantia.com.mx/apps/giftregistry/registry/22649" target="_blank" rel="noopener noreferrer">Ver lista</a>
             </div>
             <div class="gift-item">
                 <p><strong>Liverpool</strong></p>
                 <p>Número: 51942530</p>
+                <a class="btn-link gift-link" href="https://mesaderegalos.liverpool.com.mx/milistaderegalos/51942530" target="_blank" rel="noopener noreferrer">Ver lista</a>
             </div>
         </div>
     </section>
@@ -102,8 +116,12 @@
     <section class="rsvp">
         <h2>Confirmar Asistencia</h2>
         <form id="rsvp-form">
-            <input list="guests-list" id="guest-search" placeholder="Tu nombre completo..." required autocomplete="off">
-            <datalist id="guests-list"></datalist>
+            <div class="search-wrapper">
+                <input list="guests-list" id="guest-search" placeholder="Tu nombre completo..." required autocomplete="off">
+                <datalist id="guests-list"></datalist>
+                <div id="suggestions-dropdown" class="suggestions-dropdown"></div>
+            </div>
+            <div id="guest-name-display" class="guest-name-display"></div>
             <div id="dynamic-inputs"></div>
             <button type="submit" id="submit-btn" style="display:none;">Confirmar Asistencia</button>
         </form>

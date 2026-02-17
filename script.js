@@ -1,9 +1,11 @@
 let guests = [];
 
 const inputSearch = document.getElementById('guest-search');
-const autocompleteList = document.getElementById('autocomplete-list');
+const dataList = document.getElementById('guests-list');
 const dynamicContainer = document.getElementById('dynamic-inputs');
 const submitBtn = document.getElementById('submit-btn');
+const guestNameDisplay = document.getElementById('guest-name-display');
+const suggestionsDropdown = document.getElementById('suggestions-dropdown');
 const track = document.getElementById('track');
 
 // Cargar invitados desde CSV
@@ -27,6 +29,15 @@ async function loadGuestsFromCSV() {
                 guests.push({ nombre, adultos, ninos });
             }
         }
+        // Repoblar la datalist nativa para autocompletado
+        if (dataList) {
+            dataList.innerHTML = '';
+            guests.forEach(g => {
+                const opt = document.createElement('option');
+                opt.value = g.nombre;
+                dataList.appendChild(opt);
+            });
+        }
     } catch (error) {
         console.error('Error cargando CSV:', error);
     }
@@ -35,43 +46,77 @@ async function loadGuestsFromCSV() {
 // Cargar invitados al iniciar
 loadGuestsFromCSV();
 
-// Autocompletado personalizado
+// Autocompletado usando dropdown personalizado elegante
 inputSearch.addEventListener('input', (e) => {
     const val = e.target.value.trim().toLowerCase();
     dynamicContainer.innerHTML = '';
     submitBtn.style.display = 'none';
-    
+
     if (val === '') {
-        autocompleteList.innerHTML = '';
-        autocompleteList.style.display = 'none';
+        guestNameDisplay.innerHTML = '';
+        guestNameDisplay.classList.remove('active');
+        suggestionsDropdown.innerHTML = '';
+        suggestionsDropdown.classList.remove('active');
         return;
     }
-    
+
+    // Filtrar invitados que coincidan
     const filtered = guests.filter(g => g.nombre.toLowerCase().includes(val));
     
     if (filtered.length > 0) {
-        autocompleteList.innerHTML = '';
-        autocompleteList.style.display = 'block';
+        // Mostrar dropdown con sugerencias
+        suggestionsDropdown.innerHTML = '';
+        suggestionsDropdown.classList.add('active');
         
         filtered.forEach(guest => {
-            const option = document.createElement('div');
-            option.className = 'autocomplete-option';
-            option.innerHTML = `
-                <span class="guest-name">${guest.nombre}</span>
-                <span class="guest-info">${guest.adultos + guest.ninos} persona(s)</span>
+            const suggestionItem = document.createElement('div');
+            suggestionItem.className = 'suggestion-item';
+            suggestionItem.innerHTML = `
+                <span class="suggestion-name">${guest.nombre}</span>
+                <span class="suggestion-count">${guest.adultos + guest.ninos} persona(s)</span>
             `;
             
-            option.addEventListener('click', () => {
+            suggestionItem.addEventListener('click', () => {
                 inputSearch.value = guest.nombre;
-                autocompleteList.style.display = 'none';
+                suggestionsDropdown.classList.remove('active');
                 selectGuest(guest);
             });
             
-            autocompleteList.appendChild(option);
+            suggestionsDropdown.appendChild(suggestionItem);
         });
+        
+        // Mostrar preview del nombre si hay coincidencia exacta
+        const exactMatch = guests.find(g => g.nombre.toLowerCase() === val);
+        if (exactMatch) {
+            guestNameDisplay.innerHTML = `<div class="name-text">${exactMatch.nombre}</div>`;
+            guestNameDisplay.classList.add('active');
+            renderFields(exactMatch);
+            submitBtn.style.display = 'block';
+        } else {
+            guestNameDisplay.classList.remove('active');
+        }
     } else {
-        autocompleteList.innerHTML = '<div class="no-results">No se encontraron invitados</div>';
-        autocompleteList.style.display = 'block';
+        suggestionsDropdown.classList.remove('active');
+        suggestionsDropdown.innerHTML = '';
+        guestNameDisplay.classList.remove('active');
+    }
+});
+
+// Cerrar dropdown al hacer click fuera
+document.addEventListener('click', (e) => {
+    if (e.target !== inputSearch && !inputSearch.contains(e.target)) {
+        suggestionsDropdown.classList.remove('active');
+    }
+});
+
+// Mostrar dropdown al hacer focus en el input si hay sugerencias
+inputSearch.addEventListener('focus', () => {
+    const val = inputSearch.value.trim().toLowerCase();
+    if (val !== '') {
+        const filtered = guests.filter(g => g.nombre.toLowerCase().includes(val));
+        if (filtered.length > 0) {
+            suggestionsDropdown.classList.add('active');
+        }
     }
 });
 
@@ -81,23 +126,15 @@ function selectGuest(guest) {
     const guestFound = guests.find(g => g.nombre.toLowerCase() === val);
     
     if (guestFound) {
+        // Mostrar nombre elegantemente
+        guestNameDisplay.innerHTML = `<div class="name-text">${guestFound.nombre}</div>`;
+        guestNameDisplay.classList.add('active');
+        
         renderFields(guestFound);
         submitBtn.style.display = 'block';
+        suggestionsDropdown.classList.remove('active');
     }
 }
-
-// Cerrar autocompletado al hacer click fuera
-document.addEventListener('click', (e) => {
-    if (e.target !== inputSearch) {
-        autocompleteList.style.display = 'none';
-    }
-});
-
-inputSearch.addEventListener('focus', () => {
-    if (inputSearch.value.trim() !== '' && autocompleteList.children.length > 0) {
-        autocompleteList.style.display = 'block';
-    }
-});
 
 // Prevenir envío si el invitado no está en la lista
 document.getElementById('rsvp-form').addEventListener('submit', (e) => {
@@ -179,6 +216,10 @@ function showConfirmationMessage(guest) {
         form.style.display = 'block';
         inputSearch.value = '';
         dynamicContainer.innerHTML = '';
+        guestNameDisplay.innerHTML = '';
+        guestNameDisplay.classList.remove('active');
+        suggestionsDropdown.innerHTML = '';
+        suggestionsDropdown.classList.remove('active');
         submitBtn.style.display = 'none';
         inputSearch.focus();
     });
