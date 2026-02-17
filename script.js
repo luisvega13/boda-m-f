@@ -1,7 +1,7 @@
 let guests = [];
 
 const inputSearch = document.getElementById('guest-search');
-const autocompleteList = document.getElementById('autocomplete-list');
+const dataList = document.getElementById('guests-list');
 const dynamicContainer = document.getElementById('dynamic-inputs');
 const submitBtn = document.getElementById('submit-btn');
 const track = document.getElementById('track');
@@ -27,6 +27,15 @@ async function loadGuestsFromCSV() {
                 guests.push({ nombre, adultos, ninos });
             }
         }
+        // Repoblar la datalist nativa para autocompletado
+        if (dataList) {
+            dataList.innerHTML = '';
+            guests.forEach(g => {
+                const opt = document.createElement('option');
+                opt.value = g.nombre;
+                dataList.appendChild(opt);
+            });
+        }
     } catch (error) {
         console.error('Error cargando CSV:', error);
     }
@@ -35,43 +44,19 @@ async function loadGuestsFromCSV() {
 // Cargar invitados al iniciar
 loadGuestsFromCSV();
 
-// Autocompletado personalizado
+// Autocompletado usando la datalist nativa
 inputSearch.addEventListener('input', (e) => {
     const val = e.target.value.trim().toLowerCase();
     dynamicContainer.innerHTML = '';
     submitBtn.style.display = 'none';
-    
-    if (val === '') {
-        autocompleteList.innerHTML = '';
-        autocompleteList.style.display = 'none';
-        return;
-    }
-    
-    const filtered = guests.filter(g => g.nombre.toLowerCase().includes(val));
-    
-    if (filtered.length > 0) {
-        autocompleteList.innerHTML = '';
-        autocompleteList.style.display = 'block';
-        
-        filtered.forEach(guest => {
-            const option = document.createElement('div');
-            option.className = 'autocomplete-option';
-            option.innerHTML = `
-                <span class="guest-name">${guest.nombre}</span>
-                <span class="guest-info">${guest.adultos + guest.ninos} persona(s)</span>
-            `;
-            
-            option.addEventListener('click', () => {
-                inputSearch.value = guest.nombre;
-                autocompleteList.style.display = 'none';
-                selectGuest(guest);
-            });
-            
-            autocompleteList.appendChild(option);
-        });
-    } else {
-        autocompleteList.innerHTML = '<div class="no-results">No se encontraron invitados</div>';
-        autocompleteList.style.display = 'block';
+
+    if (val === '') return;
+
+    // Si el usuario escribió exactamente un nombre existente, mostramos los campos dinámicos
+    const guestFound = guests.find(g => g.nombre.toLowerCase() === val);
+    if (guestFound) {
+        renderFields(guestFound);
+        submitBtn.style.display = 'block';
     }
 });
 
@@ -86,18 +71,7 @@ function selectGuest(guest) {
     }
 }
 
-// Cerrar autocompletado al hacer click fuera
-document.addEventListener('click', (e) => {
-    if (e.target !== inputSearch) {
-        autocompleteList.style.display = 'none';
-    }
-});
-
-inputSearch.addEventListener('focus', () => {
-    if (inputSearch.value.trim() !== '' && autocompleteList.children.length > 0) {
-        autocompleteList.style.display = 'block';
-    }
-});
+// No se usa autocomplete-list: usamos la datalist nativa en el HTML (`guests-list`).
 
 // Prevenir envío si el invitado no está en la lista
 document.getElementById('rsvp-form').addEventListener('submit', (e) => {

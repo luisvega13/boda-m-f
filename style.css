@@ -358,7 +358,7 @@ footer { padding: 40px 20px; font-size: 0.9rem; color: var(--text-light); }
     .card.active { transform: scale(1.15); }
     .hero {
         background: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), 
-                    url('img/background-boda-2.jpeg') no-repeat center center/cover;
+                    url('img/background-boda.jpeg') no-repeat center center/cover;
     }
     .prev { left: -20px; }
     .next { right: -20px; }
