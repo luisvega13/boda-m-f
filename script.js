@@ -228,79 +228,33 @@ function showConfirmationMessage(guest) {
     });
 }
 
-// ... (Tu código de invitados se mantiene igual)
+// ========================================
+// CARRUSEL DE FOTOS
+// ========================================
+const member = document.querySelectorAll('.member');
+const prevBtn = document.querySelector('.prev');
+const nextBtn = document.querySelector('.next');
 
-const originalCards = Array.from(track.children);
-const nextBtn = document.getElementById('nextBtn');
-const prevBtn = document.getElementById('prevBtn');
+let index = 0;
 
-// 1. Clonación mejorada: Creamos un set antes y otro después
-// Esto asegura que siempre haya contenido visual en ambos extremos
-const numOriginals = originalCards.length;
-const clonesAfter = originalCards.map(card => card.cloneNode(true));
-const clonesBefore = originalCards.map(card => card.cloneNode(true));
-
-clonesAfter.forEach(clone => track.appendChild(clone));
-clonesBefore.reverse().forEach(clone => track.prepend(clone));
-
-const allCards = Array.from(track.children);
-// El índice inicial debe ser el número de clones para mostrar la primera foto real
-let currentIndex = numOriginals; 
-let isTransitioning = false;
-
-function updateCarousel(smooth = true) {
-    const cardWidth = allCards[0].offsetWidth;
-    // Cálculo de desplazamiento centrado
-    const offset = -(currentIndex * cardWidth) + (track.parentElement.offsetWidth / 2) - (cardWidth / 2);
-    
-    // Usamos requestAnimationFrame para asegurar que el navegador esté listo para el cambio
-    requestAnimationFrame(() => {
-        track.style.transition = smooth ? "transform 8s cubic-bezier(0.25, 1, 0.5, 1)" : "none";
-        track.style.transform = `translateX(${offset}px)`;
-    });
-
-    allCards.forEach((card, i) => {
-        card.classList.toggle('active', i === currentIndex);
-    });
+function updateCarousel(){
+    member.forEach(m => m.classList.remove('active','left','right'));
+    const total = member.length;
+    let left = (index - 1 + total) % total;
+    let right = (index + 1) % total;
+    member[index].classList.add('active');
+    member[left].classList.add('left');
+    member[right].classList.add('right');
 }
 
-// 2. EL SALTO INVISIBLE (SIN PARPADEO)
-track.addEventListener('transitionend', () => {
-    isTransitioning = false;
-
-    // Si llegamos al final de las originales (empezamos a ver clones del final)
-    if (currentIndex >= numOriginals * 2) {
-        currentIndex = numOriginals; // Teletransportar a la primera original
-        updateCarousel(false);
-    } 
-    // Si llegamos al principio de las originales (empezamos a ver clones del inicio)
-    else if (currentIndex < numOriginals) {
-        currentIndex = numOriginals * 2 - 1; // Teletransportar a la última original
-        updateCarousel(false);
-    }
-});
-
-// Botones y Eventos
-nextBtn.addEventListener('click', () => {
-    if (isTransitioning) return;
-    isTransitioning = true;
-    currentIndex++;
+prevBtn.onclick = () => {
+    index = (index - 1 + member.length) % member.length;
     updateCarousel();
-});
+}
 
-prevBtn.addEventListener('click', () => {
-    if (isTransitioning) return;
-    isTransitioning = true;
-    currentIndex--;
+nextBtn.onclick = () => {
+    index = (index + 1) % member.length;
     updateCarousel();
-});
+}
 
-// Inicialización corregida
-window.addEventListener('load', () => {
-    // Pequeño timeout para asegurar que el DOM y estilos CSS estén aplicados
-    setTimeout(() => updateCarousel(false), 50);
-});
-window.addEventListener('resize', () => updateCarousel(false));
-
-// Auto-play (opcional)
-setInterval(() => { if(!isTransitioning) nextBtn.click(); }, 20000000);
+updateCarousel();
