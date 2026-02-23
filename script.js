@@ -15,29 +15,33 @@ async function loadGuestsFromCSV() {
         const csvText = await response.text();
         const lines = csvText.trim().split('\n');
         
+        // Limpiamos el array de invitados antes de cargar para evitar duplicados si se llama varias veces
+        guests = [];
+
         // Saltar encabezado (primera fila)
         for (let i = 1; i < lines.length; i++) {
             const line = lines[i].trim();
             if (!line) continue;
             
+            // Dividimos la línea por comas
             const parts = line.split(',');
-            const nombre = parts[0].trim();
-            const adultos = parseInt(parts[1].trim()) || 0;
-            const ninos = parseInt(parts[2].trim()) || 0;
             
-            if (nombre && nombre !== '') {
-                guests.push({ nombre, adultos, ninos });
+            // Validación básica de que la línea tenga el formato esperado
+            if (parts.length >= 1) {
+                const nombre = parts[0].trim();
+                const adultos = parseInt(parts[1]?.trim()) || 0;
+                const ninos = parseInt(parts[2]?.trim()) || 0;
+                
+                if (nombre && nombre !== '') {
+                    guests.push({ nombre, adultos, ninos });
+                }
             }
         }
-        // Repoblar la datalist nativa para autocompletado
-        if (dataList) {
-            dataList.innerHTML = '';
-            guests.forEach(g => {
-                const opt = document.createElement('option');
-                opt.value = g.nombre;
-                dataList.appendChild(opt);
-            });
-        }
+
+        // Se eliminó la lógica de "dataList.innerHTML" para evitar el autocompletado nativo 
+        // y mantener la estética de tu dropdown personalizado.
+        console.log('Invitados cargados correctamente:', guests.length);
+
     } catch (error) {
         console.error('Error cargando CSV:', error);
     }
@@ -153,19 +157,19 @@ document.getElementById('rsvp-form').addEventListener('submit', (e) => {
 });
 
 function renderFields(guest) {
+    // Limpia el contenedor para que no se repitan los campos si el usuario borra y escribe
+    dynamicContainer.innerHTML = ''; 
+
     if (guest.adultos > 0) {
         const title = document.createElement('p');
-        title.innerText = `Nombres de acompañantes adultos (${guest.adultos}):`;
-        title.style.fontWeight = 'bold';
-        title.style.marginTop = '20px';
-        title.style.marginBottom = '10px';
-        title.style.color = 'var(--primary)';
+        title.textContent = `Nombres de los invitados adultos (${guest.adultos}):`;
+        title.style.cssText = 'font-weight: bold; margin-top: 20px; margin-bottom: 10px; color: var(--primary);';
         dynamicContainer.appendChild(title);
 
         for (let i = 1; i <= guest.adultos; i++) {
             const input = document.createElement('input');
             input.type = 'text';
-            input.placeholder = `Nombre del acompañante ${i}`;
+            input.placeholder = `Nombre del invitado ${i}`;
             input.required = true;
             input.style.marginBottom = "10px";
             dynamicContainer.appendChild(input);
@@ -174,17 +178,16 @@ function renderFields(guest) {
 
     if (guest.ninos > 0) {
         const label = document.createElement('label');
-        label.innerHTML = `¿Cuántos niños asistirán? (Máximo ${guest.ninos}):`;
-        label.style.fontWeight = 'bold';
-        label.style.marginTop = '20px';
-        label.style.marginBottom = '10px';
-        label.style.color = 'var(--primary)';
+        label.textContent = `¿Cuántos niños asistirán? (Máximo ${guest.ninos}):`;
+        label.style.cssText = 'font-weight: bold; margin-top: 20px; margin-bottom: 10px; color: var(--primary); display: block;';
+        
         const nInput = document.createElement('input');
         nInput.type = 'number';
         nInput.min = 0;
         nInput.max = guest.ninos;
         nInput.value = 0;
         nInput.style.marginBottom = "20px";
+        
         dynamicContainer.appendChild(label);
         dynamicContainer.appendChild(nInput);
     }
