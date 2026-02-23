@@ -1,169 +1,164 @@
+/* =========================================
+   VARIABLES Y CONFIGURACIÓN BASE
+   ========================================= */
 let guests = [];
-
 const inputSearch = document.getElementById('guest-search');
-const dataList = document.getElementById('guests-list');
 const dynamicContainer = document.getElementById('dynamic-inputs');
 const submitBtn = document.getElementById('submit-btn');
 const guestNameDisplay = document.getElementById('guest-name-display');
 const suggestionsDropdown = document.getElementById('suggestions-dropdown');
-const track = document.getElementById('track');
 
-// Cargar invitados desde CSV
+// Elementos del Carrusel
+const members = document.querySelectorAll('.member');
+const prevBtn = document.querySelector('.prev');
+const nextBtn = document.querySelector('.next');
+const carouselContainer = document.querySelector('.carousel-container');
+
+let index = 0;
+
+/* =========================================
+   LÓGICA DEL CARRUSEL (CON SWIPE)
+   ========================================= */
+function updateCarousel() {
+    members.forEach(m => m.classList.remove('active', 'left', 'right'));
+    const total = members.length;
+    let left = (index - 1 + total) % total;
+    let right = (index + 1) % total;
+    
+    members[index].classList.add('active');
+    members[left].classList.add('left');
+    members[right].classList.add('right');
+}
+
+// Eventos de botones
+prevBtn.onclick = () => {
+    index = (index - 1 + members.length) % members.length;
+    updateCarousel();
+};
+
+nextBtn.onclick = () => {
+    index = (index + 1) % members.length;
+    updateCarousel();
+};
+
+// Implementación de Swipe para Móviles
+let touchStartX = 0;
+let touchEndX = 0;
+
+carouselContainer.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+}, { passive: true });
+
+carouselContainer.addEventListener('touchend', (e) => {
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipe();
+}, { passive: true });
+
+function handleSwipe() {
+    const swipeThreshold = 50; 
+    if (touchStartX - touchEndX > swipeThreshold) {
+        nextBtn.click(); // Deslizar a la izquierda -> Siguiente
+    } else if (touchEndX - touchStartX > swipeThreshold) {
+        prevBtn.click(); // Deslizar a la derecha -> Anterior
+    }
+}
+
+// Inicializar carrusel
+updateCarousel();
+
+/* =========================================
+   SISTEMA RSVP (CSV E INVITADOS)
+   ========================================= */
 async function loadGuestsFromCSV() {
     try {
         const response = await fetch('Felipe invitados.csv');
         const csvText = await response.text();
         const lines = csvText.trim().split('\n');
         
-        // Limpiamos el array de invitados antes de cargar para evitar duplicados si se llama varias veces
         guests = [];
-
-        // Saltar encabezado (primera fila)
         for (let i = 1; i < lines.length; i++) {
             const line = lines[i].trim();
             if (!line) continue;
-            
-            // Dividimos la línea por comas
             const parts = line.split(',');
-            
-            // Validación básica de que la línea tenga el formato esperado
             if (parts.length >= 1) {
                 const nombre = parts[0].trim();
                 const adultos = parseInt(parts[1]?.trim()) || 0;
                 const ninos = parseInt(parts[2]?.trim()) || 0;
-                
-                if (nombre && nombre !== '') {
+                if (nombre) {
                     guests.push({ nombre, adultos, ninos });
                 }
             }
         }
-
-        // Se eliminó la lógica de "dataList.innerHTML" para evitar el autocompletado nativo 
-        // y mantener la estética de tu dropdown personalizado.
-        console.log('Invitados cargados correctamente:', guests.length);
-
+        console.log('Invitados cargados:', guests.length);
     } catch (error) {
         console.error('Error cargando CSV:', error);
     }
 }
 
-// Cargar invitados al iniciar
 loadGuestsFromCSV();
 
-// Autocompletado usando dropdown personalizado elegante
+// Buscador y Sugerencias
 inputSearch.addEventListener('input', (e) => {
     const val = e.target.value.trim().toLowerCase();
     dynamicContainer.innerHTML = '';
     submitBtn.style.display = 'none';
 
     if (val === '') {
-        guestNameDisplay.innerHTML = '';
-        guestNameDisplay.classList.remove('active');
-        suggestionsDropdown.innerHTML = '';
-        suggestionsDropdown.classList.remove('active');
+        resetRSVPDisplay();
         return;
     }
 
-    // Filtrar invitados que coincidan
     const filtered = guests.filter(g => g.nombre.toLowerCase().includes(val));
     
     if (filtered.length > 0) {
-        // Mostrar dropdown con sugerencias
         suggestionsDropdown.innerHTML = '';
         suggestionsDropdown.classList.add('active');
         
         filtered.forEach(guest => {
-            const suggestionItem = document.createElement('div');
-            suggestionItem.className = 'suggestion-item';
-            suggestionItem.innerHTML = `
+            const item = document.createElement('div');
+            item.className = 'suggestion-item';
+            item.innerHTML = `
                 <span class="suggestion-name">${guest.nombre}</span>
-                <span class="suggestion-count">${guest.adultos + guest.ninos} persona(s)</span>
+                <span class="suggestion-count">${guest.adultos + guest.ninos} pers.</span>
             `;
-            
-            suggestionItem.addEventListener('click', () => {
+            item.onclick = () => {
                 inputSearch.value = guest.nombre;
                 suggestionsDropdown.classList.remove('active');
                 selectGuest(guest);
-            });
-            
-            suggestionsDropdown.appendChild(suggestionItem);
+            };
+            suggestionsDropdown.appendChild(item);
         });
-        
-        // Mostrar preview del nombre si hay coincidencia exacta
+
+        // Match exacto
         const exactMatch = guests.find(g => g.nombre.toLowerCase() === val);
-        if (exactMatch) {
-            guestNameDisplay.innerHTML = `<div class="name-text">${exactMatch.nombre}</div>`;
-            guestNameDisplay.classList.add('active');
-            renderFields(exactMatch);
-            submitBtn.style.display = 'block';
-        } else {
-            guestNameDisplay.classList.remove('active');
-        }
+        if (exactMatch) selectGuest(exactMatch);
     } else {
         suggestionsDropdown.classList.remove('active');
-        suggestionsDropdown.innerHTML = '';
         guestNameDisplay.classList.remove('active');
     }
 });
 
-// Cerrar dropdown al hacer click fuera
-document.addEventListener('click', (e) => {
-    if (e.target !== inputSearch && !inputSearch.contains(e.target)) {
-        suggestionsDropdown.classList.remove('active');
-    }
-});
-
-// Mostrar dropdown al hacer focus en el input si hay sugerencias
-inputSearch.addEventListener('focus', () => {
-    const val = inputSearch.value.trim().toLowerCase();
-    if (val !== '') {
-        const filtered = guests.filter(g => g.nombre.toLowerCase().includes(val));
-        if (filtered.length > 0) {
-            suggestionsDropdown.classList.add('active');
-        }
-    }
-});
-
-// Cuando se selecciona un invitado
 function selectGuest(guest) {
-    const val = inputSearch.value.trim().toLowerCase();
-    const guestFound = guests.find(g => g.nombre.toLowerCase() === val);
-    
-    if (guestFound) {
-        // Mostrar nombre elegantemente
-        guestNameDisplay.innerHTML = `<div class="name-text">${guestFound.nombre}</div>`;
-        guestNameDisplay.classList.add('active');
-        
-        renderFields(guestFound);
-        submitBtn.style.display = 'block';
-        suggestionsDropdown.classList.remove('active');
-    }
+    guestNameDisplay.innerHTML = `<div class="name-text">${guest.nombre}</div>`;
+    guestNameDisplay.classList.add('active');
+    renderFields(guest);
+    submitBtn.style.display = 'block';
+    suggestionsDropdown.classList.remove('active');
 }
 
-// Prevenir envío si el invitado no está en la lista
-document.getElementById('rsvp-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    
-    const val = inputSearch.value.trim().toLowerCase();
-    const guestFound = guests.find(g => g.nombre.toLowerCase() === val);
-    
-    if (!guestFound) {
-        alert('Lo sentimos, tu nombre no aparece en la lista de invitados.');
-        return;
-    }
-    
-    // Si la validación pasa, mostrar mensaje de confirmación
-    showConfirmationMessage(guestFound);
-});
+function resetRSVPDisplay() {
+    guestNameDisplay.innerHTML = '';
+    guestNameDisplay.classList.remove('active');
+    suggestionsDropdown.innerHTML = '';
+    suggestionsDropdown.classList.remove('active');
+}
 
 function renderFields(guest) {
-    // Limpia el contenedor para que no se repitan los campos si el usuario borra y escribe
     dynamicContainer.innerHTML = ''; 
-
     if (guest.adultos > 0) {
         const title = document.createElement('p');
-        title.textContent = `Nombres de los invitados adultos (${guest.adultos}):`;
-        title.style.cssText = 'font-weight: bold; margin-top: 20px; margin-bottom: 10px; color: var(--primary);';
+        title.textContent = `Nombres de adultos (${guest.adultos}):`;
+        title.style.cssText = 'font-weight: bold; margin-top: 20px; color: var(--primary);';
         dynamicContainer.appendChild(title);
 
         for (let i = 1; i <= guest.adultos; i++) {
@@ -171,7 +166,6 @@ function renderFields(guest) {
             input.type = 'text';
             input.placeholder = `Nombre del invitado ${i}`;
             input.required = true;
-            input.style.marginBottom = "10px";
             dynamicContainer.appendChild(input);
         }
     }
@@ -179,25 +173,33 @@ function renderFields(guest) {
     if (guest.ninos > 0) {
         const label = document.createElement('label');
         label.textContent = `¿Cuántos niños asistirán? (Máximo ${guest.ninos}):`;
-        label.style.cssText = 'font-weight: bold; margin-top: 20px; margin-bottom: 10px; color: var(--primary); display: block;';
-        
+        label.style.cssText = 'font-weight: bold; display: block; margin-top: 15px; color: var(--primary);';
         const nInput = document.createElement('input');
         nInput.type = 'number';
         nInput.min = 0;
         nInput.max = guest.ninos;
         nInput.value = 0;
-        nInput.style.marginBottom = "20px";
-        
         dynamicContainer.appendChild(label);
         dynamicContainer.appendChild(nInput);
     }
 }
 
+// Manejo del envío del formulario
+document.getElementById('rsvp-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const val = inputSearch.value.trim().toLowerCase();
+    const guestFound = guests.find(g => g.nombre.toLowerCase() === val);
+    
+    if (guestFound) {
+        showConfirmationMessage(guestFound);
+    } else {
+        alert('Por favor, selecciona un nombre de la lista.');
+    }
+});
+
 function showConfirmationMessage(guest) {
-    // Ocultar formulario y mostrar mensaje
     const form = document.getElementById('rsvp-form');
     const rsvpSection = document.querySelector('.rsvp');
-    
     form.style.display = 'none';
     
     const confirmationBox = document.createElement('div');
@@ -211,50 +213,21 @@ function showConfirmationMessage(guest) {
             <button class="btn-new-rsvp">Confirmar otro invitado</button>
         </div>
     `;
-    
     rsvpSection.appendChild(confirmationBox);
     
-    document.querySelector('.btn-new-rsvp').addEventListener('click', () => {
+    confirmationBox.querySelector('.btn-new-rsvp').onclick = () => {
         confirmationBox.remove();
         form.style.display = 'block';
         inputSearch.value = '';
         dynamicContainer.innerHTML = '';
-        guestNameDisplay.innerHTML = '';
-        guestNameDisplay.classList.remove('active');
-        suggestionsDropdown.innerHTML = '';
-        suggestionsDropdown.classList.remove('active');
+        resetRSVPDisplay();
         submitBtn.style.display = 'none';
-        inputSearch.focus();
-    });
+    };
 }
 
-// ========================================
-// CARRUSEL DE FOTOS
-// ========================================
-const member = document.querySelectorAll('.member');
-const prevBtn = document.querySelector('.prev');
-const nextBtn = document.querySelector('.next');
-
-let index = 0;
-
-function updateCarousel(){
-    member.forEach(m => m.classList.remove('active','left','right'));
-    const total = member.length;
-    let left = (index - 1 + total) % total;
-    let right = (index + 1) % total;
-    member[index].classList.add('active');
-    member[left].classList.add('left');
-    member[right].classList.add('right');
-}
-
-prevBtn.onclick = () => {
-    index = (index - 1 + member.length) % member.length;
-    updateCarousel();
-}
-
-nextBtn.onclick = () => {
-    index = (index + 1) % member.length;
-    updateCarousel();
-}
-
-updateCarousel();
+// Cerrar dropdown al hacer click fuera
+document.addEventListener('click', (e) => {
+    if (!inputSearch.contains(e.target) && !suggestionsDropdown.contains(e.target)) {
+        suggestionsDropdown.classList.remove('active');
+    }
+});
