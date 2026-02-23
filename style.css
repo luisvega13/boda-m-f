@@ -32,7 +32,7 @@ h1, h2, h3 {
 }
 
 h2 { font-size: 2.5rem; margin-bottom: 30px; }
-
+.gallery h2 { margin-bottom: 0px; line-height: 0; margin-top: 70px;}
 #m {
     text-align: center;
     color: red;
@@ -107,28 +107,14 @@ h2 { font-size: 2.5rem; margin-bottom: 30px; }
    CARRUSEL
    ========================================= */
 .gallery { 
-    padding: 60px 20px; 
-}
-
-.video-container {
-    padding: 40px 20px;
-    display: block;
-    justify-content: center;
-    align-items: center;
-}
-
-.video-container video {
-    width: 100%;
-    max-width: 900px;
-    border-radius: 15px;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    padding: 1px 20px; 
 }
 
 .team-carousel {
     position: relative;
     width: 90%;
     max-width: 1000px;
-    margin: 40px auto;
+    margin: 0px auto;
 }
 
 .carousel-container {
@@ -212,7 +198,7 @@ h2 { font-size: 2.5rem; margin-bottom: 30px; }
    UBICACIONES (Ceremonia y Salón)
    ========================================= */
 .locations {
-    padding: 60px 20px;
+    padding: 0px 20px 60px;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 30px;
@@ -506,21 +492,38 @@ footer { padding: 40px 20px; font-size: 0.9rem; color: var(--text-light); }
         width: 95%;
         margin: 30px auto;
     }
-    
-    .member.left {
-        left: 15%;
-        opacity: 0.3;
+
+    .carousel-container {
+        height: clamp(260px, 50vh, 380px);
     }
-    
-    .member.right {
-        left: 85%;
-        opacity: 0.3;
+
+    /* En móviles ocultamos todas las cards excepto la activa para que se vea grande */
+    .member {
+        transition: opacity 0.3s ease, transform 0.3s ease;
     }
-    
+
+    .member:not(.active) {
+        display: none;
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.9);
+        pointer-events: none;
+    }
+
+    .member.active img {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+    }
+
     .btn {
-        width: clamp(35px, 7vw, 50px);
-        height: clamp(35px, 7vw, 50px);
+        width: clamp(36px, 10vw, 48px);
+        height: clamp(36px, 10vw, 48px);
+        font-size: clamp(16px, 4vw, 22px);
     }
+
+    .prev { left: 10px; }
+    .next { right: 10px; }
 }
 
 @media (min-width: 481px) and (max-width: 768px) {
