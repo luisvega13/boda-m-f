@@ -20,14 +20,20 @@ let index = 0;
    LÓGICA DEL CARRUSEL (CON SWIPE)
    ========================================= */
 function updateCarousel() {
-    members.forEach(m => m.classList.remove('active', 'left', 'right'));
+    members.forEach(m => {
+        m.classList.remove('active', 'left', 'right');
+        m.style.animation = "none";
+    });
+
     const total = members.length;
     let left = (index - 1 + total) % total;
     let right = (index + 1) % total;
-    
+
     members[index].classList.add('active');
     members[left].classList.add('left');
     members[right].classList.add('right');
+
+    members[index].style.animation = "photoFadeIn 1s ease";
 }
 
 // Eventos de botones
