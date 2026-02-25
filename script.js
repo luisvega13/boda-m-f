@@ -81,21 +81,29 @@ async function loadGuestsFromCSV() {
         const csvText = await response.text();
         const lines = csvText.trim().split('\n');
         
-        guests = [];
+        // Saltar encabezado (primera fila)
         for (let i = 1; i < lines.length; i++) {
             const line = lines[i].trim();
             if (!line) continue;
+            
             const parts = line.split(',');
-            if (parts.length >= 1) {
-                const nombre = parts[0].trim();
-                const adultos = parseInt(parts[1]?.trim()) || 0;
-                const ninos = parseInt(parts[2]?.trim()) || 0;
-                if (nombre) {
-                    guests.push({ nombre, adultos, ninos });
-                }
+            const nombre = parts[0].trim();
+            const adultos = parseInt(parts[1].trim()) || 0;
+            const ninos = parseInt(parts[2].trim()) || 0;
+            
+            if (nombre && nombre !== '') {
+                guests.push({ nombre, adultos, ninos });
             }
         }
-        console.log('Invitados cargados:', guests.length);
+        // Repoblar la datalist nativa para autocompletado
+        if (dataList) {
+            dataList.innerHTML = '';
+            guests.forEach(g => {
+                const opt = document.createElement('option');
+                opt.value = g.nombre;
+                dataList.appendChild(opt);
+            });
+        }
     } catch (error) {
         console.error('Error cargando CSV:', error);
     }
@@ -160,17 +168,19 @@ function resetRSVPDisplay() {
 }
 
 function renderFields(guest) {
-    dynamicContainer.innerHTML = ''; 
     if (guest.adultos > 0) {
         const title = document.createElement('p');
-        title.textContent = `Nombres de adultos (${guest.adultos}):`;
-        title.style.cssText = 'font-weight: bold; margin-top: 20px; color: var(--primary);';
+        title.innerText = `Nombres de acompañantes adultos (${guest.adultos}):`;
+        title.style.fontWeight = 'bold';
+        title.style.marginTop = '20px';
+        title.style.marginBottom = '10px';
+        title.style.color = 'var(--primary)';
         dynamicContainer.appendChild(title);
 
         for (let i = 1; i <= guest.adultos; i++) {
             const input = document.createElement('input');
             input.type = 'text';
-            input.placeholder = `Nombre del invitado ${i}`;
+            input.placeholder = `Nombre del acompañante ${i}`;
             input.required = true;
             dynamicContainer.appendChild(input);
         }
@@ -178,13 +188,17 @@ function renderFields(guest) {
 
     if (guest.ninos > 0) {
         const label = document.createElement('label');
-        label.textContent = `¿Cuántos niños asistirán? (Máximo ${guest.ninos}):`;
-        label.style.cssText = 'font-weight: bold; display: block; margin-top: 15px; color: var(--primary);';
+        label.innerHTML = `¿Cuántos niños asistirán? (Máximo ${guest.ninos}):`;
+        label.style.fontWeight = 'bold';
+        label.style.marginTop = '20px';
+        label.style.marginBottom = '10px';
+        label.style.color = 'var(--primary)';
         const nInput = document.createElement('input');
         nInput.type = 'number';
         nInput.min = 0;
         nInput.max = guest.ninos;
         nInput.value = 0;
+        nInput.style.marginBottom = "20px";
         dynamicContainer.appendChild(label);
         dynamicContainer.appendChild(nInput);
     }
