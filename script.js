@@ -245,9 +245,79 @@ function showConfirmationMessage(guest) {
     };
 }
 
-// Cerrar dropdown al hacer click fuera
-document.addEventListener('click', (e) => {
-    if (!inputSearch.contains(e.target) && !suggestionsDropdown.contains(e.target)) {
-        suggestionsDropdown.classList.remove('active');
+// ... (Tu código de invitados se mantiene igual)
+
+const originalCards = Array.from(track.children);
+const nextBtn = document.getElementById('nextBtn');
+const prevBtn = document.getElementById('prevBtn');
+
+// 1. Clonación mejorada: Creamos un set antes y otro después
+// Esto asegura que siempre haya contenido visual en ambos extremos
+const numOriginals = originalCards.length;
+const clonesAfter = originalCards.map(card => card.cloneNode(true));
+const clonesBefore = originalCards.map(card => card.cloneNode(true));
+
+clonesAfter.forEach(clone => track.appendChild(clone));
+clonesBefore.reverse().forEach(clone => track.prepend(clone));
+
+const allCards = Array.from(track.children);
+// El índice inicial debe ser el número de clones para mostrar la primera foto real
+let currentIndex = numOriginals; 
+let isTransitioning = false;
+
+function updateCarousel(smooth = true) {
+    const cardWidth = allCards[0].offsetWidth;
+    // Cálculo de desplazamiento centrado
+    const offset = -(currentIndex * cardWidth) + (track.parentElement.offsetWidth / 2) - (cardWidth / 2);
+    
+    // Usamos requestAnimationFrame para asegurar que el navegador esté listo para el cambio
+    requestAnimationFrame(() => {
+        track.style.transition = smooth ? "transform 8s cubic-bezier(0.25, 1, 0.5, 1)" : "none";
+        track.style.transform = `translateX(${offset}px)`;
+    });
+
+    allCards.forEach((card, i) => {
+        card.classList.toggle('active', i === currentIndex);
+    });
+}
+
+// 2. EL SALTO INVISIBLE (SIN PARPADEO)
+track.addEventListener('transitionend', () => {
+    isTransitioning = false;
+
+    // Si llegamos al final de las originales (empezamos a ver clones del final)
+    if (currentIndex >= numOriginals * 2) {
+        currentIndex = numOriginals; // Teletransportar a la primera original
+        updateCarousel(false);
+    } 
+    // Si llegamos al principio de las originales (empezamos a ver clones del inicio)
+    else if (currentIndex < numOriginals) {
+        currentIndex = numOriginals * 2 - 1; // Teletransportar a la última original
+        updateCarousel(false);
     }
 });
+
+// Botones y Eventos
+nextBtn.addEventListener('click', () => {
+    if (isTransitioning) return;
+    isTransitioning = true;
+    currentIndex++;
+    updateCarousel();
+});
+
+prevBtn.addEventListener('click', () => {
+    if (isTransitioning) return;
+    isTransitioning = true;
+    currentIndex--;
+    updateCarousel();
+});
+
+// Inicialización corregida
+window.addEventListener('load', () => {
+    // Pequeño timeout para asegurar que el DOM y estilos CSS estén aplicados
+    setTimeout(() => updateCarousel(false), 50);
+});
+window.addEventListener('resize', () => updateCarousel(false));
+
+// Auto-play (opcional)
+setInterval(() => { if(!isTransitioning) nextBtn.click(); }, 20000000);

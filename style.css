@@ -103,92 +103,91 @@ h2 { font-size: 2.5rem; margin-bottom: 30px; }
 }
 
 /* =========================================
-   CARRUSEL
-   ========================================= */
-/* =========================================
-   3. CARRUSEL DE FOTOS (ESCRITORIO)
+   CARRUSEL INFINITO
    ========================================= */
 .gallery { padding: 40px 0; }
 
-.team-carousel {
-    position: relative;
+.video-container {
+    padding: 40px 20px;
+    display: block;
+    justify-content: center;
+    align-items: center;
+}
+
+.video-container video {
     width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
+    max-width: 900px;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
 }
 
 .carousel-container {
-    position: relative;
-    height: 600px;
-    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 100%;
+    max-width: 1200px;
+    margin: auto;
+    position: relative;
 }
 
-.member {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    opacity: 0;
-    transition: var(--transition-smooth);
-    z-index: 1;
+.carousel-window {
+    overflow: hidden;
+    width: 100%;
+    padding: 60px 0;
 }
 
-.member img {
-    width: 350px;
-    height: 450px;
-    border-radius: 15px;
-    object-fit: cover;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+.carousel-track {
+    display: flex;
+    align-items: center;
+    will-change: transform;
+    transition: none;
 }
 
-/* Estados del carrusel en Desktop */
-.member.active {
+.card {
+    min-width: 100%; 
+    transition: transform 0.6s ease, opacity 0.6s ease, filter 0.6s ease;
+    opacity: 0.4;
+    transform: scale(0.85);
+    filter: grayscale(100%);
+    padding: 0 10px;
+}
+
+.card.active {
     opacity: 1;
-    z-index: 3;
-    transform: translate(-50%, -50%) scale(1);
-}
-
-.member.left {
-    left: 15%;
-    transform: translate(-50%, -50%) scale(0.8);
-    opacity: 0.5;
+    transform: scale(1);
+    filter: grayscale(0%);
     z-index: 2;
 }
 
-.member.right {
-    left: 85%;
-    transform: translate(-50%, -50%) scale(0.8);
-    opacity: 0.5;
-    z-index: 2;
+.card img {
+    width: 100%;
+    height: clamp(300px, 50vh, 450px);
+    object-fit: cover;
+    border-radius: 15px;
+    display: block;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
 }
 
-/* Botones de navegación */
-.btn {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background-color: var(--primary);
+.nav-btn {
+    background: var(--primary);
     color: white;
-    width: 55px;
-    height: 55px;
-    border-radius: 50%;
     border: none;
+    width: 45px;
+    height: 45px;
     cursor: pointer;
-    font-size: 24px;
+    border-radius: 50%;
+    position: absolute;
     z-index: 10;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: var(--transition-smooth);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    transition: background 0.3s, transform 0.2s;
 }
 
-.btn:hover { background-color: var(--primary-dark); transform: translateY(-50%) scale(1.1); }
-.prev { left: 20px; }
-.next { right: 20px; }
+.nav-btn:hover { background-color: var(--primary-dark); transform: scale(1.1); }
+.prev { left: 10px; }
+.next { right: 10px; }
 
 /* =========================================
    UBICACIONES (Ceremonia y Salón)
@@ -488,69 +487,15 @@ footer{
 /* =========================================
    MEDIA QUERIES
    ========================================= */
-@media (max-width: 480px) {
-    .team-carousel {
-        width: 95%;
-        margin: 30px auto;
+@media (min-width: 768px) {
+    .card { min-width: 33.33%; }
+    .card.active { transform: scale(1.15); }
+    .hero {
+        background: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), 
+                    url('img/background-boda.jpeg') no-repeat center center/cover;
     }
-
-    .carousel-container {
-        height: clamp(260px, 50vh, 380px);
-    }
-
-    /* En móviles ocultamos todas las cards excepto la activa para que se vea grande */
-    .member {
-        transition: opacity 0.3s ease, transform 0.3s ease;
-    }
-
-    .member:not(.active) {
-        display: none;
-        opacity: 0;
-        transform: translate(-50%, -50%) scale(0.9);
-        pointer-events: none;
-    }
-
-    .member.active img {
-        width: 100%;
-        max-width: 100%;
-        height: auto;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.18);
-    }
-
-    .btn {
-        width: clamp(36px, 10vw, 48px);
-        height: clamp(36px, 10vw, 48px);
-        font-size: clamp(16px, 4vw, 22px);
-    }
-
-    .prev { left: 10px; }
-    .next { right: 10px; }
-}
-
-@media (min-width: 481px) and (max-width: 768px) {
-    .team-carousel {
-        width: 92%;
-        margin: 35px auto;
-    }
-    
-    .member.left {
-        left: 18%;
-        opacity: 0.4;
-    }
-    
-    .member.right {
-        left: 82%;
-        opacity: 0.4;
-    }
-}
-
-@media (min-width: 769px) {
-    .prev { 
-        left: -30px; 
-    }
-    .next { 
-        right: -30px; 
-    }
+    .prev { left: -20px; }
+    .next { right: -20px; }
 }
 
 .gifts, .family, .rsvp{
