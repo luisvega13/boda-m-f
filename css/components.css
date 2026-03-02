@@ -83,3 +83,57 @@
     border: 1px solid rgba(212, 163, 115, 0.2);
 }
 /* Fin Mesa de Regalos */
+
+/* Cuenta Regresiva */
+.countdown {
+    padding: 0 20px 60px; /* Padding superior, sin padding inferior para fluir con el intro */
+    text-align: center;
+    background-color: var(--bg);
+}
+
+.countdown-container {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    max-width: 600px;
+    margin: 0 auto;
+    flex-wrap: wrap;
+}
+
+.time-box {
+    background: var(--white);
+    padding: 15px 20px;
+    border-radius: 15px;
+    min-width: 80px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    border: 1px solid rgba(212, 163, 115, 0.2);
+    flex: 1;
+}
+
+.time-box span {
+    font-size: 2.2rem;
+    font-weight: 600;
+    color: var(--primary);
+    font-family: 'Montserrat', sans-serif;
+    display: block;
+    line-height: 1;
+    margin-bottom: 5px;
+}
+
+.time-box p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 400;
+}
+
+/* Ajuste para móviles pequeños */
+@media (max-width: 400px) {
+    .time-box {
+        min-width: calc(50% - 15px);
+    }
+}
+/* Fin Cuenta Regresiva */
+
