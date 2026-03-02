@@ -9,9 +9,31 @@
     <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="css/carousel.css">
     <link rel="stylesheet" href="css/rsvp.css">
+    <link rel="stylesheet" href="css/sobre.css">
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="locked">
+    <div id="sobre-screen" class="intro-sobre-screen">
+        <div class="envelope" id="envelope-main">
+            <div class="flap-top"></div>
+
+            <div class="body-envelope"></div>
+
+            <div class="invitation-card">
+                <p>Nuestra Boda</p>
+                <h2>Mayra & Felipe</h2>
+                <p>11 de Abril de 2026</p>
+            </div>
+
+            <div class="seal" id="seal-click">
+                ❤️
+            </div>
+        </div>
+    </div>
+
+    <audio id="bg-music" loop>
+        <source src="audio/cancion-boda.mp3" type="audio/mpeg">
+    </audio>
 
     <header class="hero">
         <div class="hero-text">
@@ -151,5 +173,6 @@
     <script src="js/countdown.js"></script>
     <script src="js/carousel.js"></script>
     <script src="js/rsvp.js"></script>
+    <script src="js/music.js"></script>
 </body>
 </html>
