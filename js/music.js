@@ -1,5 +1,3 @@
-// js/music.js
-
 document.addEventListener('DOMContentLoaded', () => {
     const sobreScreen = document.getElementById('sobre-screen');
     const sobre = document.getElementById('envelope-main');
