@@ -1,0 +1,144 @@
+/* =========================================
+   SECCIÓN RSVP - REDISEÑO ESTÉTICO
+   ========================================= */
+.rsvp {
+    margin: 60px auto;
+    padding: 80px 40px;
+    max-width: 800px;
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(212, 163, 115, 0.1);
+    text-align: center;
+}
+
+/* Buscador Personalizado */
+.search-wrapper { 
+    position: relative; 
+    width: 100%; 
+    max-width: 500px;
+    margin: 0 auto 30px; 
+}
+
+#guest-search {
+    width: 100%;
+    padding: 15px 20px;
+    border: 1px solid rgba(212, 163, 115, 0.3);
+    border-radius: 30px; /* Bordes redondeados para un look más suave */
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background-color: #fffaf5;
+    outline: none;
+}
+
+#guest-search:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 10px rgba(212, 163, 115, 0.2);
+    background-color: #ffffff;
+}
+
+/* Dropdown de Sugerencias (Elimina el look nativo) */
+.suggestions-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 5px); 
+    left: 0; 
+    right: 0;
+    background: white;
+    border: 1px solid rgba(212, 163, 115, 0.2);
+    border-radius: 15px;
+    max-height: 250px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.suggestions-dropdown.active { display: block; }
+
+.suggestion-item {
+    padding: 15px 20px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f9f9f9;
+    transition: all 0.2s;
+    font-family: 'Montserrat', sans-serif;
+    color: var(--text);
+}
+
+.suggestion-item:hover { 
+    background-color: #fdf8f2; 
+    color: var(--primary);
+}
+
+/* Visualización del Nombre Seleccionado */
+.guest-name-display {
+    margin:  0;
+}
+
+.guest-name-display .name-text {
+    font-family: 'Dancing Script', cursive;
+    font-size: 2.2rem;
+    color: var(--primary);
+    /* line-height: 1.2; */
+    text-shadow: 1px 1px 2px rgba(212, 163, 115, 0.1);
+}
+
+/* Inputs Dinámicos de Acompañantes */
+#dynamic-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 20px auto;
+    max-width: 450px;
+    text-align: left;
+}
+
+#dynamic-inputs p {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    color: var(--primary-dark);
+    margin-bottom: 8px;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+#dynamic-inputs input {
+    width: 100%;
+    padding: 12px 18px;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    font-family: 'Montserrat', sans-serif;
+    background-color: #ffffff;
+    transition: border 0.3s;
+}
+
+#dynamic-inputs input:focus {
+    border-color: var(--primary);
+    outline: none;
+}
+
+/* Botón de Confirmación */
+#submit-btn {
+    background-color: var(--primary);
+    color: white;
+    padding: 15px 40px;
+    border: none;
+    border-radius: 30px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin: 20px auto 0;
+    box-shadow: 0 4px 15px rgba(212, 163, 115, 0.3);
+}
+
+#submit-btn:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(212, 163, 115, 0.4);
+}

@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nuestra Boda - Mayra & Felipe</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/carousel.css">
+    <link rel="stylesheet" href="css/rsvp.css">
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -74,28 +78,16 @@
             <a class="btn-link" href="https://maps.app.goo.gl/9y6JNqKWiBaW36nY7?g_st=aw" target="_blank" rel="noopener noreferrer">Ver en Maps</a>
         </div>
     </section>
-    
+
     <section class="itinerary">
-        <h2>Itinerario</h2>
-        <div class="timeline">
-            <div class="event"><span>4:00 pm</span><p>Ceremonia</p></div>
-            <div class="event"><span>8:00 pm</span><p>Recepción</p></div>
-            <div class="event"><span>8:30 pm</span><p>Cena</p></div>
-            <div class="event"><span>9:30 pm</span><p>Brindis</p></div>
-            <div class="event"><span>9:40 pm</span><p>Vals de novios</p></div>
-            <div class="event"><span>10:30 pm</span><p>Se abre pista</p></div>
-            
+        <!-- <h2>Itinerario</h2> -->
+        <div class="itinerary-wrapper">
+            <picture>
+                <source media="(min-width: 768px)" srcset="img/itineario_horizontal.png">
+                <img src="img/itinerario_vertical.png" alt="Itinerario de la boda" class="itinerary-img">
+            </picture>
         </div>
     </section>
-    
-    <!-- <div class="video-container">
-        <h2>Mayra y Felipe</h2>
-
-        <video controls width="100%" style="max-width: 1000px; margin: 0 auto; display: block; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">
-            <source src="img/F&M std.mp4" type="video/mp4">
-            Tu navegador no soporta la etiqueta de video.
-        </video>
-    </div> -->
 
     <section class="gifts">
         <h2>Mesa de Regalos</h2>
@@ -117,8 +109,7 @@
         <h2>Confirmar Asistencia</h2>
         <form id="rsvp-form">
             <div class="search-wrapper">
-                <input list="guests-list" id="guest-search" placeholder="Tu nombre completo..." required autocomplete="off">
-                <datalist id="guests-list"></datalist>
+                <input type="text" id="guest-search" placeholder="Tu nombre completo..." required autocomplete="off">
                 <div id="suggestions-dropdown" class="suggestions-dropdown"></div>
             </div>
             <div id="guest-name-display" class="guest-name-display"></div>
@@ -129,6 +120,8 @@
 
     <footer><p>Con amor y cariño de Mayra y Felipe</p></footer>
 
-    <script src="script.js"></script>
+    <!-- <script src="script.js"></script> -->
+    <script src="js/carousel.js"></script>
+    <script src="js/rsvp.js"></script>
 </body>
 </html>

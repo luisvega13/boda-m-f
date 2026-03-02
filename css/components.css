@@ -1,0 +1,85 @@
+/* Botones */
+.btn-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px;
+    background: var(--primary);
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-link:hover { background: var(--primary-dark); transform: translateY(-2px); }
+
+/* Fin Botones */
+
+/* Ubicaciones */
+.locations {
+    padding: 60px 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    max-width: 1000px;
+    margin: auto;
+}
+
+.location-card {
+    background: white;
+    padding: 40px 30px;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    text-align: center;
+}
+
+.time { font-weight: 600; color: var(--gold); font-size: 1.2rem; }
+/* Fin Ubicaciones */
+
+/* Itineario */
+.itinerary-wrapper {
+    width: 100%;
+    max-width: 1000px; /* Ajusta según el ancho de tu diseño de PC */
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.itinerary-img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 10px; /* Opcional: para suavizar las esquinas */
+    /* Si tus imágenes tienen fondo transparente o quieres que respiren: */
+    max-height: 85vh; 
+    object-fit: contain;
+}
+
+/* Ajuste específico para que en PC no se estire demasiado si la imagen es pequeña */
+@media (min-width: 768px) {
+    .itinerary-img {
+        width: auto;
+        max-width: 100%;
+    }
+}
+/* Fin de itinerario */
+
+/* Mesa de Regalos */
+.gift-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    max-width: 800px;
+    margin: auto;
+}
+
+.gift-item {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    border: 1px solid rgba(212, 163, 115, 0.2);
+}
+/* Fin Mesa de Regalos */

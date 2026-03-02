@@ -1,0 +1,32 @@
+:root {
+    --primary: #d4a373;
+    --primary-dark: #bc8a5f;
+    --secondary: #fefae0;
+    --text: #333;
+    --text-light: #666;
+    --white: #ffffff;
+    --bg: #fafafa;
+    --gold: #b8860b;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    margin: 0;
+    color: var(--text);
+    background-color: var(--bg);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+h1, h2, h3 {
+    font-family: 'Dancing Script', cursive;
+    text-align: center;
+    color: var(--primary);
+}
+
+h2 { font-size: 2.5rem; margin-bottom: 30px; }
+h3 { font-size: 2rem;}
