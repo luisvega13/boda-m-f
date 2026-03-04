@@ -18,12 +18,11 @@ function cargarInvitados() {
         
         const acompañantesTexto = invitado.acompanantes && invitado.acompanantes.length > 0 
             ? invitado.acompanantes.join(', ') 
-            : '<span style="color: #aaa;">Sin acompañantes extra</span>';
+            : '<span style="color: #aaa;">Sin invitados extra</span>';
 
         tr.innerHTML = `
             <td><strong>${invitado.nombre}</strong></td>
             <td>${acompañantesTexto}</td>
-            <td>${invitado.fecha}</td>
             <td>
                 <button class="btn btn-reset" onclick="eliminarInvitado(${index})">Resetear Estado</button>
             </td>
@@ -57,11 +56,11 @@ function exportarCSV() {
     }
 
     // Definir encabezados del CSV
-    let csvContent = "Nombre Principal,Acompañantes,Fecha de Registro\n";
+    let csvContent = "Nombre Principal,Invitados,Fecha de Registro\n";
 
     // Recorrer los invitados y dar formato a las filas
     confirmados.forEach(invitado => {
-        const acompañantes = invitado.acompanantes ? invitado.acompanantes.join(' - ') : "Sin acompañantes";
+        const acompañantes = invitado.acompanantes ? invitado.acompanantes.join(' - ') : "Sin Invitados";
         // Limpiar comas internas para no romper el formato CSV
         const fila = `"${invitado.nombre}","${acompañantes}","${invitado.fecha}"\n`;
         csvContent += fila;

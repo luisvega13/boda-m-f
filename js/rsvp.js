@@ -1,5 +1,5 @@
 /* =========================================
-   SISTEMA RSVP (CSV E INVITADOS)
+   SISTEMA RSVP (CSV, LOCALSTORAGE Y GOOGLE SHEETS)
    ========================================= */
 let guests = [];
 const inputSearch = document.getElementById('guest-search');
@@ -9,9 +9,11 @@ const guestNameDisplay = document.getElementById('guest-name-display');
 const suggestionsDropdown = document.getElementById('suggestions-dropdown');
 const dataList = document.getElementById('guests-list');
 
+// URL de tu implementación de Google Apps Script
+const googleScriptURL = "https://script.google.com/macros/s/AKfycbykse9b3nOSOaSVISP0u2yGokpqEg1Qb2P0KdvuYAmeEAxNeVJ45GY5ftl1ei5DOGIL/exec";
+
 async function loadGuestsFromCSV() {
     try {
-        // Se asume el nombre del archivo basado en tu proyecto anterior
         const response = await fetch('Felipe invitados.csv'); 
         const csvText = await response.text();
         const lines = csvText.trim().split('\n');
@@ -27,12 +29,13 @@ async function loadGuestsFromCSV() {
             });
         }
         
-        // Llenar datalist nativo
-        guests.forEach(g => {
-            const opt = document.createElement('option');
-            opt.value = g.nombre;
-            dataList.appendChild(opt);
-        });
+        if (dataList) {
+            guests.forEach(g => {
+                const opt = document.createElement('option');
+                opt.value = g.nombre;
+                dataList.appendChild(opt);
+            });
+        }
     } catch (error) {
         console.error('Error cargando invitados:', error);
     }
@@ -74,10 +77,9 @@ inputSearch.addEventListener('input', (e) => {
     }
 });
 
-
-
 function renderFields(guest) {
-    // 1. Renderizar campos para Adultos
+    dynamicContainer.innerHTML = ''; 
+    
     if (guest.adultos > 0) {
         const titleAdultos = document.createElement('p');
         titleAdultos.innerText = `Invitados adultos (${guest.adultos}):`;
@@ -90,17 +92,16 @@ function renderFields(guest) {
             input.placeholder = `Nombre del adulto ${i}`;
             input.required = true;
             input.style.marginBottom = "10px";
-            input.classList.add('input-adulto'); // Clase opcional por si quieres darles estilos distintos
+            input.classList.add('input-adulto');
             dynamicContainer.appendChild(input);
         }
     }
 
-    // 2. Renderizar campos para Niños
     if (guest.ninos > 0) {
         const titleNinos = document.createElement('p');
         titleNinos.innerText = `Niños (${guest.ninos}):`;
         titleNinos.style.fontWeight = 'bold';
-        titleNinos.style.marginTop = '15px'; // Separación visual entre adultos y niños
+        titleNinos.style.marginTop = '15px';
         dynamicContainer.appendChild(titleNinos);
 
         for (let i = 1; i <= guest.ninos; i++) {
@@ -109,7 +110,7 @@ function renderFields(guest) {
             input.placeholder = `Nombre del niño ${i}`;
             input.required = true;
             input.style.marginBottom = "10px";
-            input.classList.add('input-nino'); // Clase opcional
+            input.classList.add('input-nino');
             dynamicContainer.appendChild(input);
         }
     }
@@ -125,7 +126,6 @@ function selectGuest(guest) {
     guestNameDisplay.innerHTML = `<div class="name-text">${guest.nombre}</div>`;
     guestNameDisplay.classList.add('active');
 
-    // Validar si el invitado ya existe en el almacenamiento local
     let confirmados = JSON.parse(localStorage.getItem('invitadosConfirmados')) || [];
     let yaConfirmado = confirmados.some(c => c.nombre === guest.nombre);
 
@@ -139,44 +139,68 @@ function selectGuest(guest) {
     suggestionsDropdown.classList.remove('active');
 }
 
-// Manejo del envío
-document.getElementById('rsvp-form').addEventListener('submit', (e) => {
+// Manejo del envío a LocalStorage y Google Sheets
+document.getElementById('rsvp-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const guestFound = guests.find(g => g.nombre.toLowerCase() === inputSearch.value.trim().toLowerCase());
     
     if (guestFound) {
-        // Doble validación por seguridad
         let confirmados = JSON.parse(localStorage.getItem('invitadosConfirmados')) || [];
         if (confirmados.some(c => c.nombre === guestFound.nombre)) {
             alert("Este invitado ya está confirmado.");
             return;
         }
 
-        // Recopilar los nombres de los acompañantes de los inputs generados
         const inputs = dynamicContainer.querySelectorAll('input');
         const listaAcompanantes = Array.from(inputs).map(inp => inp.value).filter(val => val.trim() !== '');
-
-        // Guardar en localStorage
-        confirmados.push({
+        
+        const datosInvitado = {
             nombre: guestFound.nombre,
             acompanantes: listaAcompanantes,
             fecha: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString()
-        });
-        localStorage.setItem('invitadosConfirmados', JSON.stringify(confirmados));
+        };
 
-        // Actualizar la interfaz con el mensaje de éxito
-        const form = document.getElementById('rsvp-form');
-        form.style.display = 'none';
-        
-        const confirmationBox = document.createElement('div');
-        confirmationBox.id = 'confirmation-box';
-        confirmationBox.innerHTML = `
-            <h3 style="font-family: 'Dancing Script', cursive; font-size: 2.5rem; color: var(--primary);">¡Confirmado!</h3>
-            <p style="font-family: 'Montserrat', sans-serif; font-size: 1.1rem;">Gracias <strong>${guestFound.nombre}</strong>, nos vemos el 11 de Abril de 2026.</p>
-            <button class="btn-link" onclick="location.reload()" style="margin-top: 20px; cursor: pointer; background: none; border: none; font-size: 1rem; color: var(--primary); text-decoration: underline;">Confirmar otra invitación</button>
-        `;
-        document.querySelector('.rsvp').appendChild(confirmationBox);
+        try {
+            // Feedback visual
+            submitBtn.innerText = "Enviando...";
+            submitBtn.disabled = true;
+
+            // Envío a Google Sheets
+            await fetch(googleScriptURL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(datosInvitado)
+            });
+
+            // Guardar localmente
+            confirmados.push(datosInvitado);
+            localStorage.setItem('invitadosConfirmados', JSON.stringify(confirmados));
+
+            // Mostrar mensaje de éxito
+            mostrarExito(guestFound.nombre);
+
+        } catch (error) {
+            console.error("Error al enviar a Sheets:", error);
+            alert("Hubo un error al registrar tu asistencia. Por favor intenta de nuevo.");
+            submitBtn.innerText = "Confirmar Asistencia";
+            submitBtn.disabled = false;
+        }
     }
 });
+
+function mostrarExito(nombre) {
+    const form = document.getElementById('rsvp-form');
+    form.style.display = 'none';
+    
+    const confirmationBox = document.createElement('div');
+    confirmationBox.id = 'confirmation-box';
+    confirmationBox.innerHTML = `
+        <h3 style="font-family: 'Dancing Script', cursive; font-size: 2.5rem; color: var(--primary);">¡Confirmado!</h3>
+        <p style="font-family: 'Montserrat', sans-serif; font-size: 1.1rem;">Gracias <strong>${nombre}</strong>, nos vemos el 11 de Abril de 2026.</p>
+        <button class="btn-link" onclick="location.reload()" style="margin-top: 20px; cursor: pointer; background: none; border: none; font-size: 1rem; color: var(--primary); text-decoration: underline;">Confirmar otra invitación</button>
+    `;
+    document.querySelector('.rsvp').appendChild(confirmationBox);
+}
 
 loadGuestsFromCSV();
