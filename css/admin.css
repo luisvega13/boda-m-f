@@ -1,0 +1,83 @@
+/* Variables de color para la boda */
+:root {
+    --primary: #d4a373;
+    --primary-dark: #b5835a;
+    --bg-color: #fdf8f2;
+}
+
+body { 
+    font-family: 'Montserrat', sans-serif; 
+    background-color: var(--bg-color); 
+    padding: 40px 20px; 
+    color: #333; 
+}
+
+.admin-container { 
+    max-width: 1000px; 
+    margin: 0 auto; 
+    background: white; 
+    padding: 30px; 
+    border-radius: 15px; 
+    box-shadow: 0 10px 25px rgba(212, 163, 115, 0.15); 
+}
+
+.header-actions { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    border-bottom: 2px solid #f9f9f9;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+}
+
+h1 { color: var(--primary); margin: 0; }
+
+table { width: 100%; border-collapse: collapse; }
+
+th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+
+th { background-color: #fffaf5; color: var(--primary-dark); font-weight: 600; }
+
+.btn { 
+    padding: 10px 15px; 
+    border: none; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    font-family: 'Montserrat', sans-serif; 
+    font-weight: 600;
+    transition: 0.3s; 
+}
+
+.btn-reset { background-color: #f28b82; color: white; font-size: 0.85rem;}
+.btn-reset:hover { background-color: #e0665c; }
+
+/* Configuración específica para la impresión del PDF */
+@media print {
+    .btn, .btn-reset, .header-actions button, .no-print {
+        display: none !important;
+    }
+    body {
+        background-color: white !important;
+        padding: 0;
+    }
+    .admin-container {
+        box-shadow: none;
+        max-width: 100%;
+        padding: 0;
+    }
+    table {
+        border: 1px solid #000;
+        width: 100%;
+    }
+    th {
+        background-color: #f2f2f2 !important;
+        color: black !important;
+        border-bottom: 2px solid #000;
+    }
+    h1::after {
+        content: " - Lista Oficial de Invitados";
+        display: block;
+        font-size: 1rem;
+        color: #666;
+    }
+}

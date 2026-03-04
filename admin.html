@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Confirmaciones - Boda</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+    <div class="admin-container">
+        <div class="header-actions">
+            <h1>Lista de Acceso</h1>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn" onclick="window.print()" style="background-color: #4a4a4a; color: white;">Descargar PDF / Imprimir</button>
+                <button class="btn btn-reset" onclick="reiniciarTodos()">Reiniciar Lista</button>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre Principal</th>
+                    <th>Acompañantes</th>
+                    <th>Fecha y Hora</th>
+                    <th class="no-print">Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tabla-invitados">
+                </tbody>
+        </table>
+    </div>
+
+    <script src="js/admin.js"></script>
+</body>
+</html>
