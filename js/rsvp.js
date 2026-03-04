@@ -1,5 +1,5 @@
 /* =========================================
-   SISTEMA RSVP (CSV, LOCALSTORAGE Y GOOGLE SHEETS)
+   SISTEMA RSVP (CSV Y ENVÍO A GOOGLE SHEETS)
    ========================================= */
 let guests = [];
 const inputSearch = document.getElementById('guest-search');
@@ -14,10 +14,12 @@ const googleScriptURL = "https://script.google.com/macros/s/AKfycbykse9b3nOSOaSV
 
 async function loadGuestsFromCSV() {
     try {
+        // Se carga la lista actualizada de invitados
         const response = await fetch('Felipe invitados.csv'); 
         const csvText = await response.text();
         const lines = csvText.trim().split('\n');
         
+        guests = []; // Limpiar array antes de cargar
         for (let i = 1; i < lines.length; i++) {
             const parts = lines[i].split(',');
             if (parts.length < 3) continue;
@@ -26,14 +28,6 @@ async function loadGuestsFromCSV() {
                 nombre: parts[0].trim(),
                 adultos: parseInt(parts[1]) || 0,
                 ninos: parseInt(parts[2]) || 0
-            });
-        }
-        
-        if (dataList) {
-            guests.forEach(g => {
-                const opt = document.createElement('option');
-                opt.value = g.nombre;
-                dataList.appendChild(opt);
             });
         }
     } catch (error) {
@@ -126,31 +120,18 @@ function selectGuest(guest) {
     guestNameDisplay.innerHTML = `<div class="name-text">${guest.nombre}</div>`;
     guestNameDisplay.classList.add('active');
 
-    let confirmados = JSON.parse(localStorage.getItem('invitadosConfirmados')) || [];
-    let yaConfirmado = confirmados.some(c => c.nombre === guest.nombre);
-
-    if (yaConfirmado) {
-        dynamicContainer.innerHTML = '<p style="color: #d9534f; font-weight: 600; text-align: center;">Este invitado ya ha confirmado su asistencia previamente.</p>';
-        submitBtn.style.display = 'none';
-    } else {
-        renderFields(guest);
-        submitBtn.style.display = 'block';
-    }
+    // Se eliminó la validación contra localStorage para permitir re-registros si el admin limpia la lista
+    renderFields(guest);
+    submitBtn.style.display = 'block';
+    
     suggestionsDropdown.classList.remove('active');
 }
 
-// Manejo del envío a LocalStorage y Google Sheets
 document.getElementById('rsvp-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const guestFound = guests.find(g => g.nombre.toLowerCase() === inputSearch.value.trim().toLowerCase());
     
     if (guestFound) {
-        let confirmados = JSON.parse(localStorage.getItem('invitadosConfirmados')) || [];
-        if (confirmados.some(c => c.nombre === guestFound.nombre)) {
-            alert("Este invitado ya está confirmado.");
-            return;
-        }
-
         const inputs = dynamicContainer.querySelectorAll('input');
         const listaAcompanantes = Array.from(inputs).map(inp => inp.value).filter(val => val.trim() !== '');
         
@@ -161,7 +142,6 @@ document.getElementById('rsvp-form').addEventListener('submit', async (e) => {
         };
 
         try {
-            // Feedback visual
             submitBtn.innerText = "Enviando...";
             submitBtn.disabled = true;
 
@@ -173,16 +153,17 @@ document.getElementById('rsvp-form').addEventListener('submit', async (e) => {
                 body: JSON.stringify(datosInvitado)
             });
 
-            // Guardar localmente
+            // Opcional: Guardamos en localStorage solo como referencia local, 
+            // pero ya no bloquea el flujo principal si el usuario recarga.
+            let confirmados = JSON.parse(localStorage.getItem('invitadosConfirmados')) || [];
             confirmados.push(datosInvitado);
             localStorage.setItem('invitadosConfirmados', JSON.stringify(confirmados));
 
-            // Mostrar mensaje de éxito
             mostrarExito(guestFound.nombre);
 
         } catch (error) {
             console.error("Error al enviar a Sheets:", error);
-            alert("Hubo un error al registrar tu asistencia. Por favor intenta de nuevo.");
+            alert("Hubo un error al registrar tu asistencia.");
             submitBtn.innerText = "Confirmar Asistencia";
             submitBtn.disabled = false;
         }
