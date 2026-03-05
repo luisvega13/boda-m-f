@@ -23,18 +23,18 @@ async function cargarInvitados() {
         }
 
         // Renderizar cada invitado en la tabla
+        // Localiza esta sección dentro de la función cargarInvitados
         datosConfirmados.forEach((invitado) => {
             const tr = document.createElement('tr');
             
-            // Verificamos si hay acompañantes y limpiamos el formato
             const acompañantesTexto = (invitado.acompanantes && invitado.acompanantes.length > 0 && invitado.acompanantes[0] !== "")
                 ? invitado.acompanantes.join(', ') 
                 : '<span style="color: #aaa;">Sin invitados extra</span>';
 
+            // Agregamos data-label para que el CSS sepa qué título poner en móvil
             tr.innerHTML = `
-                <td><strong>${invitado.nombre}</strong></td>
-                <td>${acompañantesTexto}</td>
-                
+                <td data-label="Nombre Principal"><strong>${invitado.nombre}</strong></td>
+                <td data-label="Invitados">${acompañantesTexto}</td>
             `;
             tbody.appendChild(tr);
         });

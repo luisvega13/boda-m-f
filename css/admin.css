@@ -51,6 +51,87 @@ th { background-color: #fffaf5; color: var(--primary-dark); font-weight: 600; }
 .btn-reset { background-color: #f28b82; color: white; font-size: 0.85rem;}
 .btn-reset:hover { background-color: #e0665c; }
 
+/* ... (mantén tus variables y estilos anteriores) ... */
+
+.admin-container { 
+    max-width: 1000px; 
+    margin: 0 auto; 
+    background: white; 
+    padding: 20px; /* Reducido para móviles */
+    border-radius: 15px; 
+    box-shadow: 0 10px 25px rgba(212, 163, 115, 0.15); 
+}
+
+.header-actions { 
+    display: flex; 
+    flex-direction: column; /* Apilar en móviles por defecto */
+    gap: 15px;
+    align-items: center; 
+    border-bottom: 2px solid #f9f9f9;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Media Query para pantallas medianas/grandes (Desktop) */
+@media (min-width: 600px) {
+    .header-actions {
+        flex-direction: row;
+        justify-content: space-between;
+        text-align: left;
+    }
+    
+    .admin-container {
+        padding: 30px;
+    }
+}
+
+/* --- TABLA RESPONSIVE (Modo Card) --- */
+@media (max-width: 600px) {
+    /* Escondemos el encabezado de la tabla */
+    table thead {
+        display: none;
+    }
+
+    table, tbody, tr, td {
+        display: block;
+        width: 100%;
+    }
+
+    tr {
+        margin-bottom: 15px;
+        border: 1px solid #eee;
+        border-radius: 10px;
+        padding: 10px;
+        background: #fffaf5;
+    }
+
+    td {
+        text-align: left;
+        padding: 8px 10px;
+        border: none;
+        position: relative;
+    }
+
+    /* Añadimos etiquetas antes del contenido */
+    td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--primary-dark);
+        display: block;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        margin-bottom: 2px;
+    }
+
+    .btn {
+        width: 100%; /* Botones de ancho completo en móvil */
+        margin-bottom: 5px;
+    }
+}
+
+/* Mantén tu configuración de @media print al final */
+
 /* Configuración específica para la impresión del PDF */
 @media print {
     .btn, .btn-reset, .header-actions button, .no-print {
