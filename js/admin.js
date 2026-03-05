@@ -1,81 +1,84 @@
+// URL de tu implementación de Google Apps Script (la misma que usas en rsvp.js)
+const googleScriptURL = "https://script.google.com/macros/s/AKfycbykse9b3nOSOaSVISP0u2yGokpqEg1Qb2P0KdvuYAmeEAxNeVJ45GY5ftl1ei5DOGIL/exec";
+
 document.addEventListener('DOMContentLoaded', cargarInvitados);
 
-function cargarInvitados() {
+// Variable global para guardar los datos cargados y poder exportarlos a CSV después
+let datosConfirmados = [];
+
+async function cargarInvitados() {
     const tbody = document.getElementById('tabla-invitados');
-    tbody.innerHTML = '';
+    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding: 30px;">Cargando datos desde la nube...</td></tr>';
     
-    // Obtener datos del localStorage
-    let confirmados = JSON.parse(localStorage.getItem('invitadosConfirmados')) || [];
-    
-    if (confirmados.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 30px; color: #888;">No hay invitados confirmados aún.</td></tr>';
-        return;
-    }
-
-    // Renderizar cada invitado en la tabla
-    confirmados.forEach((invitado, index) => {
-        const tr = document.createElement('tr');
+    try {
+        // Hacemos la petición GET al script de Google
+        const response = await fetch(googleScriptURL);
+        datosConfirmados = await response.json();
         
-        const acompañantesTexto = invitado.acompanantes && invitado.acompanantes.length > 0 
-            ? invitado.acompanantes.join(', ') 
-            : '<span style="color: #aaa;">Sin invitados extra</span>';
+        tbody.innerHTML = ''; // Limpiar mensaje de carga
 
-        tr.innerHTML = `
-            <td><strong>${invitado.nombre}</strong></td>
-            <td>${acompañantesTexto}</td>
-            <td>
-                <button class="btn btn-reset" onclick="eliminarInvitado(${index})">Resetear Estado</button>
-            </td>
-        `;
-        tbody.appendChild(tr);
-    });
-}
+        if (!datosConfirmados || datosConfirmados.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding: 30px; color: #888;">No hay invitados confirmados aún en la hoja de cálculo.</td></tr>';
+            return;
+        }
 
-function eliminarInvitado(index) {
-    if (confirm('¿Estás seguro de que deseas reiniciar a este invitado? El invitado podrá volver a confirmar en la página principal.')) {
-        let confirmados = JSON.parse(localStorage.getItem('invitadosConfirmados')) || [];
-        confirmados.splice(index, 1); // Remover el elemento del array
-        localStorage.setItem('invitadosConfirmados', JSON.stringify(confirmados)); // Guardar cambios
-        cargarInvitados(); // Recargar la tabla
+        // Renderizar cada invitado en la tabla
+        datosConfirmados.forEach((invitado) => {
+            const tr = document.createElement('tr');
+            
+            // Verificamos si hay acompañantes y limpiamos el formato
+            const acompañantesTexto = (invitado.acompanantes && invitado.acompanantes.length > 0 && invitado.acompanantes[0] !== "")
+                ? invitado.acompanantes.join(', ') 
+                : '<span style="color: #aaa;">Sin invitados extra</span>';
+
+            tr.innerHTML = `
+                <td><strong>${invitado.nombre}</strong></td>
+                <td>${acompañantesTexto}</td>
+                
+            `;
+            tbody.appendChild(tr);
+        });
+
+    } catch (error) {
+        console.error("Error al obtener datos:", error);
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding: 30px; color: red;">Error al conectar con Google Sheets. Verifica la URL del script.</td></tr>';
     }
 }
 
-function reiniciarTodos() {
-    if (confirm('⚠️ ¿Estás completamente seguro de eliminar TODAS las confirmaciones actuales?')) {
-        localStorage.removeItem('invitadosConfirmados');
-        cargarInvitados();
-    }
-}
 function exportarCSV() {
-    // Obtener los datos actuales del localStorage
-    let confirmados = JSON.parse(localStorage.getItem('invitadosConfirmados')) || [];
-
-    if (confirmados.length === 0) {
-        alert("No hay datos para exportar.");
+    if (datosConfirmados.length === 0) {
+        alert("No hay datos cargados para exportar.");
         return;
     }
 
     // Definir encabezados del CSV
     let csvContent = "Nombre Principal,Invitados,Fecha de Registro\n";
 
-    // Recorrer los invitados y dar formato a las filas
-    confirmados.forEach(invitado => {
-        const acompañantes = invitado.acompanantes ? invitado.acompanantes.join(' - ') : "Sin Invitados";
-        // Limpiar comas internas para no romper el formato CSV
+    // Recorrer los invitados cargados desde la nube
+    datosConfirmados.forEach(invitado => {
+        const acompañantes = (invitado.acompanantes && invitado.acompanantes.length > 0) 
+            ? invitado.acompanantes.join(' - ') 
+            : "Sin Invitados";
+            
+        // Formatear fila con comillas para evitar errores por comas internas
         const fila = `"${invitado.nombre}","${acompañantes}","${invitado.fecha}"\n`;
         csvContent += fila;
     });
 
-    // Crear el archivo y forzar la descarga con codificación UTF-8 para acentos
+    // Crear el archivo y forzar la descarga (UTF-8 con BOM para Excel/Acentos)
     const blob = new Blob(["\ufeff" + csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
     
     link.setAttribute("href", url);
-    link.setAttribute("download", "lista_invitados_boda.csv");
+    link.setAttribute("download", "confirmaciones_boda_realtime.csv");
     link.style.visibility = 'hidden';
     
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+}
+
+function reiniciarTodos() {
+    alert("Para reiniciar la lista, por favor borra las filas directamente en tu archivo de Google Sheets.");
 }
