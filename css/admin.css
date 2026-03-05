@@ -73,6 +73,26 @@ th { background-color: #fffaf5; color: var(--primary-dark); font-weight: 600; }
     text-align: center;
 }
 
+/* Ajuste de anchos para la tabla de invitados */
+
+/* Columna de Nombre Principal: un ancho menor */
+th:nth-child(1), 
+td:nth-child(1) {
+    width: 100%; 
+    text-align: left;
+}
+
+th:nth-child(2), 
+td:nth-child(2) {
+    width: 100%; 
+    word-break: break-word;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
 /* Media Query para pantallas medianas/grandes (Desktop) */
 @media (min-width: 600px) {
     .header-actions {
@@ -83,6 +103,17 @@ th { background-color: #fffaf5; color: var(--primary-dark); font-weight: 600; }
     
     .admin-container {
         padding: 30px;
+    }
+    th:nth-child(1), 
+    td:nth-child(1) {
+        width: 30%; 
+        text-align: left;
+    }
+
+    th:nth-child(2), 
+    td:nth-child(2) {
+        width: 70%; 
+        word-break: break-word;
     }
 }
 
@@ -95,7 +126,6 @@ th { background-color: #fffaf5; color: var(--primary-dark); font-weight: 600; }
 
     table, tbody, tr, td {
         display: block;
-        width: 100%;
     }
 
     tr {

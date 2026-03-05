@@ -79,6 +79,6 @@ function exportarCSV() {
     document.body.removeChild(link);
 }
 
-function reiniciarTodos() {
-    alert("Para reiniciar la lista, por favor borra las filas directamente en tu archivo de Google Sheets.");
-}
+// function reiniciarTodos() {
+//     alert("Para reiniciar la lista, por favor borra las filas directamente en tu archivo de Google Sheets.");
+// }
