@@ -18,7 +18,7 @@ async function cargarInvitados() {
         tbody.innerHTML = ''; // Limpiar mensaje de carga
 
         if (!datosConfirmados || datosConfirmados.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding: 30px; color: #888;">No hay invitados confirmados aún en la hoja de cálculo.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding: 30px; color: #888;">No hay invitados confirmados aún.</td></tr>';
             return;
         }
 

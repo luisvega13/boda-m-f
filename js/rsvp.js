@@ -1,25 +1,30 @@
-/* =========================================
-   SISTEMA RSVP (CSV Y ENVÍO A GOOGLE SHEETS)
-   ========================================= */
+/* ============================================================
+   SISTEMA RSVP CON VALIDACIÓN EN TIEMPO REAL (GOOGLE SHEETS)
+   ============================================================ */
+
 let guests = [];
+let confirmedGuests = []; // Lista de personas que ya están en el Excel
+
 const inputSearch = document.getElementById('guest-search');
 const dynamicContainer = document.getElementById('dynamic-inputs');
 const submitBtn = document.getElementById('submit-btn');
 const guestNameDisplay = document.getElementById('guest-name-display');
 const suggestionsDropdown = document.getElementById('suggestions-dropdown');
-const dataList = document.getElementById('guests-list');
 
-// URL de tu implementación de Google Apps Script
+// URL de tu Google Apps Script (doGet y doPost)
 const googleScriptURL = "https://script.google.com/macros/s/AKfycbykse9b3nOSOaSVISP0u2yGokpqEg1Qb2P0KdvuYAmeEAxNeVJ45GY5ftl1ei5DOGIL/exec";
 
-async function loadGuestsFromCSV() {
+/**
+ * 1. Inicialización: Carga invitados del CSV y confirmados de la nube
+ */
+async function initRSVP() {
     try {
-        // Se carga la lista actualizada de invitados
-        const response = await fetch('Felipe invitados.csv'); 
-        const csvText = await response.text();
+        // Cargar lista base desde CSV
+        const responseCsv = await fetch('Felipe invitados.csv'); 
+        const csvText = await responseCsv.text();
         const lines = csvText.trim().split('\n');
         
-        guests = []; // Limpiar array antes de cargar
+        guests = []; 
         for (let i = 1; i < lines.length; i++) {
             const parts = lines[i].split(',');
             if (parts.length < 3) continue;
@@ -30,12 +35,25 @@ async function loadGuestsFromCSV() {
                 ninos: parseInt(parts[2]) || 0
             });
         }
+
+        // Cargar confirmados desde Google Sheets (usando tu función doGet)
+        const responseSheets = await fetch(googleScriptURL);
+        const dataSheets = await responseSheets.json();
+        
+        // Si la respuesta es un array, lo guardamos
+        if (Array.isArray(dataSheets)) {
+            confirmedGuests = dataSheets;
+        }
+        
+        console.log("Sistema listo. Invitados cargados y confirmaciones sincronizadas.");
     } catch (error) {
-        console.error('Error cargando invitados:', error);
+        console.error('Error al inicializar datos:', error);
     }
 }
 
-// Buscador dinámico
+/**
+ * 2. Buscador Dinámico
+ */
 inputSearch.addEventListener('input', (e) => {
     const val = e.target.value.trim().toLowerCase();
     dynamicContainer.innerHTML = '';
@@ -71,9 +89,34 @@ inputSearch.addEventListener('input', (e) => {
     }
 });
 
+/**
+ * 3. Selección de Invitado y VALIDACIÓN de duplicados
+ */
+function selectGuest(guest) {
+    guestNameDisplay.innerHTML = `<div class="name-text">${guest.nombre}</div>`;
+    guestNameDisplay.classList.add('active');
+    dynamicContainer.innerHTML = '';
+
+    // Verificar si el nombre ya aparece en la lista de confirmados de Google Sheets
+    const yaRegistro = confirmedGuests.some(c => c.nombre.trim().toLowerCase() === guest.nombre.trim().toLowerCase());
+
+    if (yaRegistro) {
+        // Mostrar mensaje de bloqueo si ya confirmó anteriormente
+        dynamicContainer.innerHTML = `
+            <div style="background: #fff5f5; border: 1px solid #feb2b2; padding: 15px; border-radius: 8px; margin: 15px 0; text-align: center;">
+                <p style="color: #c53030; font-weight: 600; margin-bottom: 5px;">¡Ya hemos recibido tu confirmación!</p>
+                <p style="font-size: 0.9rem; color: #742a2a;">Gracias por avisarnos, tu registro ya se encuentra en nuestra lista.</p>
+            </div>
+        `;
+        submitBtn.style.display = 'none';
+    } else {
+        // Mostrar campos para llenar si es la primera vez
+        renderFields(guest);
+        submitBtn.style.display = 'block';
+    }
+}
+
 function renderFields(guest) {
-    dynamicContainer.innerHTML = ''; 
-    
     if (guest.adultos > 0) {
         const titleAdultos = document.createElement('p');
         titleAdultos.innerText = `Invitados adultos (${guest.adultos}):`;
@@ -85,8 +128,10 @@ function renderFields(guest) {
             input.type = 'text';
             input.placeholder = `Nombre del adulto ${i}`;
             input.required = true;
+            input.className = 'input-adulto';
+            input.style.display = "block";
+            input.style.width = "100%";
             input.style.marginBottom = "10px";
-            input.classList.add('input-adulto');
             dynamicContainer.appendChild(input);
         }
     }
@@ -103,8 +148,10 @@ function renderFields(guest) {
             input.type = 'text';
             input.placeholder = `Nombre del niño ${i}`;
             input.required = true;
+            input.className = 'input-nino';
+            input.style.display = "block";
+            input.style.width = "100%";
             input.style.marginBottom = "10px";
-            input.classList.add('input-nino');
             dynamicContainer.appendChild(input);
         }
     }
@@ -116,17 +163,9 @@ function resetRSVPDisplay() {
     suggestionsDropdown.classList.remove('active');
 }
 
-function selectGuest(guest) {
-    guestNameDisplay.innerHTML = `<div class="name-text">${guest.nombre}</div>`;
-    guestNameDisplay.classList.add('active');
-
-    // Se eliminó la validación contra localStorage para permitir re-registros si el admin limpia la lista
-    renderFields(guest);
-    submitBtn.style.display = 'block';
-    
-    suggestionsDropdown.classList.remove('active');
-}
-
+/**
+ * 4. Envío de Formulario (doPost)
+ */
 document.getElementById('rsvp-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const guestFound = guests.find(g => g.nombre.toLowerCase() === inputSearch.value.trim().toLowerCase());
@@ -138,7 +177,7 @@ document.getElementById('rsvp-form').addEventListener('submit', async (e) => {
         const datosInvitado = {
             nombre: guestFound.nombre,
             acompanantes: listaAcompanantes,
-            fecha: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString()
+            fecha: new Date().toLocaleString()
         };
 
         try {
@@ -153,17 +192,11 @@ document.getElementById('rsvp-form').addEventListener('submit', async (e) => {
                 body: JSON.stringify(datosInvitado)
             });
 
-            // Opcional: Guardamos en localStorage solo como referencia local, 
-            // pero ya no bloquea el flujo principal si el usuario recarga.
-            let confirmados = JSON.parse(localStorage.getItem('invitadosConfirmados')) || [];
-            confirmados.push(datosInvitado);
-            localStorage.setItem('invitadosConfirmados', JSON.stringify(confirmados));
-
             mostrarExito(guestFound.nombre);
 
         } catch (error) {
-            console.error("Error al enviar a Sheets:", error);
-            alert("Hubo un error al registrar tu asistencia.");
+            console.error("Error al enviar:", error);
+            alert("Hubo un error al registrar tu asistencia. Intenta de nuevo.");
             submitBtn.innerText = "Confirmar Asistencia";
             submitBtn.disabled = false;
         }
@@ -177,11 +210,12 @@ function mostrarExito(nombre) {
     const confirmationBox = document.createElement('div');
     confirmationBox.id = 'confirmation-box';
     confirmationBox.innerHTML = `
-        <h3 style="font-family: 'Dancing Script', cursive; font-size: 2.5rem; color: var(--primary);">¡Confirmado!</h3>
+        <h3 style="font-family: 'Dancing Script', cursive; font-size: 2.5rem; color: #D4AF37;">¡Confirmado!</h3>
         <p style="font-family: 'Montserrat', sans-serif; font-size: 1.1rem;">Gracias <strong>${nombre}</strong>, nos vemos el 11 de Abril de 2026.</p>
-        <button class="btn-link" onclick="location.reload()" style="margin-top: 20px; cursor: pointer; background: none; border: none; font-size: 1rem; color: var(--primary); text-decoration: underline;">Confirmar otra invitación</button>
+        <button class="btn-link" onclick="location.reload()" style="margin-top: 20px; border:none; background:none; text-decoration:underline; cursor:pointer;">Confirmar otra invitación</button>
     `;
     document.querySelector('.rsvp').appendChild(confirmationBox);
 }
 
-loadGuestsFromCSV();
+// Iniciar proceso
+initRSVP();
